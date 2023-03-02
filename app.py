@@ -5,14 +5,14 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 
-from models import db, connect_db
+from models import db, connect_db, User, Game, Gamelog, Collection, Wishlist, Mechanic, Category
 
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///boardgames_db'))
+    os.environ.get('DATABASE_URL', 'postgresql:///boardgames'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False

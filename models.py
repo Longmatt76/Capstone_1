@@ -36,6 +36,17 @@ class User(db.Model):
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
+    gamelogs = db.relationship('Gamelog',
+                               backref='users')
+
+    games = db.relationship('Game',
+                            secondary='collections',
+                            backref='users')
+
+    wishes = db.relationship('Game',
+                             secondary='wishes',
+                             backref='users')
+
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.Hashes password and adds user to system."""
@@ -68,81 +79,80 @@ class User(db.Model):
         return False
 
 
-class Game(db.model):
+class Game(db.Model):
     """stores detailed game data in the db"""
 
     __tablename__ = 'games'
 
-    id = db.column(db.integer,
+    id = db.Column(db.Integer,
                    primary_key=True,
                    autoincrement=True,)
 
-    api_handle = db.column(db.Text,
+    api_handle = db.Column(db.Text,
                            nullable=False,
                            unique=True,)
 
-    name = db.column(db.Text,
+    name = db.Column(db.Text,
                      nullable=False,
                      unique=True,)
 
-    year_published = db.column(db.Integer)
+    year_published = db.Column(db.Integer)
 
-    description = db.column(db.Text)
+    description = db.Column(db.Text)
 
-    thumb_url = db.column(db.Text)
+    thumb_url = db.Column(db.Text)
 
-    image_url = db.column(db.Text)
+    image_url = db.Column(db.Text)
 
-    categories = db.column(db.Array)
+    categories = db.Column(db.ARRAY)
 
-    mechanics = db.column(db.Array)
+    mechanics = db.Column(db.ARRAY)
 
-    primary_designer = db.column(db.Text)
+    primary_designer = db.Column(db.Text)
 
-    players = db.column(db.Text)
+    players = db.Column(db.Text)
 
-    playtime = db.column(db.Text)
+    playtime = db.Column(db.Text)
 
-    rules_url = db.column(db.Text)
+    rules_url = db.Column(db.Text)
 
-    offical_url = db.column(db.Text)
+    offical_url = db.Column(db.Text)
 
-    estimated_value = db.column(db.Integer)
+    estimated_value = db.Column(db.Integer)
 
     def __repr__(self):
         return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
-    
 
-class Mechanic(db.model):
+
+class Mechanic(db.Model):
     """stores the api data for a games mechanics"""
 
     __tablename__ = "mechanics"
 
     id = db.Column(db.Text,
                    primary_key=True)
-    
+
     name = db.Column(db.Text,
-                     nullable= False)
-    
+                     nullable=False)
+
     url = db.Column(db.Text)
 
 
-class Category(db.model):
+class Category(db.Model):
     """stores the api data for a games categories"""
 
     __tablename__ = "categories"
 
     id = db.Column(db.Text,
                    primary_key=True)
-    
+
     name = db.Column(db.Text,
-                     nullable= False)
-    
+                     nullable=False)
+
     url = db.Column(db.Text)
 
 
-
-class Collection(db.model):
+class Collection(db.Model):
     """stores the games in a users collection"""
 
     __tablename__ = "collections"
@@ -156,12 +166,12 @@ class Collection(db.model):
                         primary_key=True,)
 
 
-class Gamelog(db.model):
+class Gamelog(db.Model):
     """stores a users gamelogs for game playthroughs"""
 
     __tablename__ = "gamelogs"
 
-    id = db.column(db.Integer,
+    id = db.Column(db.Integer,
                    primary_key=True,
                    autoincrement=True,)
 
@@ -215,7 +225,7 @@ class Wishlist(db.Model):
     '''stores games in a users wishlist'''
 
     __tablename__ = "wishes"
-     
+
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id'),
                         primary_key=True,)
@@ -223,8 +233,15 @@ class Wishlist(db.Model):
     game_id = db.Column(db.Integer,
                         db.ForeignKey('games.id'),
                         primary_key=True,)
-    
+
     subscribe_price_alerts = db.Column(db.Boolean,
-                                        default = False),
-    
+                                       default=False)
+
     price_alert_trigger = db.Column(db.Integer)
+
+
+def connect_db(app):
+    """Connect this database to provided Flask app. """
+
+    db.app = app
+    db.init_app(app)
