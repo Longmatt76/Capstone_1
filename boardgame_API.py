@@ -6,13 +6,15 @@ CoB_id = 'VNBC6yq1WO'
 Cave_id = '0DAMHQym7H'
 Agricola = '0DAMHQym7H'
 
-resp = requests.get(f'{BASE_URL}/game/prices',
-                params={'game_id': Agricola,'client_id': client_id, 'pretty': True})
+resp = requests.get(f'{BASE_URL}/search',
+                params={'name': 'Tzolkin', 'limit': 1, 'client_id': client_id})
 
 data = resp.json()
 
-for num in range(len(data['gameWithPrices']['used'])):
-    print(data['gameWithPrices']['used'][num]['price_text'])
+print(data)
+
+# for num in range(len(data['gameWithPrices']['used'])):
+#     print(data['gameWithPrices']['used'][num]['price_text'])
 
 
 # resp = requests.get(f'{BASE_URL}/search',

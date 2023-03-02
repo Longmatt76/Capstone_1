@@ -6,47 +6,35 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
+
 class User(db.Model):
     """User in the system."""
 
     __tablename__ = 'users'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True,)
 
-    email = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
+    email = db.Column(db.Text,
+                      nullable=False,
+                      unique=True,)
 
-    username = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
+    username = db.Column(db.Text,
+                         nullable=False,
+                         unique=True,)
 
-    image_url = db.Column(
-        db.Text,
-        default="/static/images/default-pic.png",
-    )
+    image_url = db.Column(db.Text,
+                          default="/static/images/default-pic.png",)
 
-    header_image_url = db.Column(
-        db.Text,
-        default="/static/images/boardgame_header.jpeg"
-    )
+    header_image_url = db.Column(db.Text,
+                                 default="/static/images/boardgame_header.jpeg")
 
-    password = db.Column(
-        db.Text,
-        nullable=False,
-    )
+    password = db.Column(db.Text,
+                         nullable=False,)
 
-    
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
-
 
     @classmethod
     def signup(cls, username, email, password, image_url):
@@ -78,3 +66,165 @@ class User(db.Model):
                 return user
 
         return False
+
+
+class Game(db.model):
+    """stores detailed game data in the db"""
+
+    __tablename__ = 'games'
+
+    id = db.column(db.integer,
+                   primary_key=True,
+                   autoincrement=True,)
+
+    api_handle = db.column(db.Text,
+                           nullable=False,
+                           unique=True,)
+
+    name = db.column(db.Text,
+                     nullable=False,
+                     unique=True,)
+
+    year_published = db.column(db.Integer)
+
+    description = db.column(db.Text)
+
+    thumb_url = db.column(db.Text)
+
+    image_url = db.column(db.Text)
+
+    categories = db.column(db.Array)
+
+    mechanics = db.column(db.Array)
+
+    primary_designer = db.column(db.Text)
+
+    players = db.column(db.Text)
+
+    playtime = db.column(db.Text)
+
+    rules_url = db.column(db.Text)
+
+    offical_url = db.column(db.Text)
+
+    estimated_value = db.column(db.Integer)
+
+    def __repr__(self):
+        return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
+    
+
+class Mechanic(db.model):
+    """stores the api data for a games mechanics"""
+
+    __tablename__ = "mechanics"
+
+    id = db.Column(db.Text,
+                   primary_key=True)
+    
+    name = db.Column(db.Text,
+                     nullable= False)
+    
+    url = db.Column(db.Text)
+
+
+class Category(db.model):
+    """stores the api data for a games categories"""
+
+    __tablename__ = "categories"
+
+    id = db.Column(db.Text,
+                   primary_key=True)
+    
+    name = db.Column(db.Text,
+                     nullable= False)
+    
+    url = db.Column(db.Text)
+
+
+
+class Collection(db.model):
+    """stores the games in a users collection"""
+
+    __tablename__ = "collections"
+
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.id'),
+                        primary_key=True,)
+
+    game_id = db.Column(db.Integer,
+                        db.ForeignKey('games.id'),
+                        primary_key=True,)
+
+
+class Gamelog(db.model):
+    """stores a users gamelogs for game playthroughs"""
+
+    __tablename__ = "gamelogs"
+
+    id = db.column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True,)
+
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.id'),
+                        nullable=False,)
+
+    game_id = db.Column(db.Integer,
+                        db.ForeignKey('games.id'),
+                        nullable=False,)
+
+    date_of_playthrough = (db.Date)
+
+    player_count = db.Column(db.Integer,
+                             nullable=False)
+
+    player_one_name = db.Column(db.Text,
+                                default='N/A')
+
+    player_two_name = db.Column(db.Text,
+                                default='N/A')
+
+    player_three_name = db.Column(db.Text,
+                                  default='N/A')
+
+    player_four_name = db.Column(db.Text,
+                                 default='N/A')
+
+    player_five_name = db.Column(db.Text,
+                                 default='N/A')
+
+    player_one_score = db.Column(db.Integer,
+                                 default=0)
+
+    player_two_score = db.Column(db.Integer,
+                                 default=0)
+
+    player_three_score = db.Column(db.Integer,
+                                   default=0)
+
+    player_four_score = db.Column(db.Integer,
+                                  default=0)
+
+    player_five_score = db.Column(db.Integer,
+                                  default=0)
+
+    notes = db.Column(db.Text)
+
+
+class Wishlist(db.Model):
+    '''stores games in a users wishlist'''
+
+    __tablename__ = "wishes"
+     
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.id'),
+                        primary_key=True,)
+
+    game_id = db.Column(db.Integer,
+                        db.ForeignKey('games.id'),
+                        primary_key=True,)
+    
+    subscribe_price_alerts = db.Column(db.Boolean,
+                                        default = False),
+    
+    price_alert_trigger = db.Column(db.Integer)
