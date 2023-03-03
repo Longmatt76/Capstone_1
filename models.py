@@ -104,9 +104,9 @@ class Game(db.Model):
 
     image_url = db.Column(db.Text)
 
-    categories = db.Column(db.ARRAY)
+    # categories = db.Column(db.ARRAY)
 
-    mechanics = db.Column(db.ARRAY)
+    # mechanics = db.Column(db.ARRAY)
 
     primary_designer = db.Column(db.Text)
 

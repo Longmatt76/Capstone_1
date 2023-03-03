@@ -1,0 +1,30 @@
+header{
+background-image: url('/static/images/boardgame_shelf.png');
+max-width: 100%;
+height: 235px;
+background-size: cover;
+background-position: 60px;
+
+}
+
+.logo{
+    width: 40px;
+    height: 40px;
+    
+}
+
+#logo_title{
+    text-shadow: 1.5px 1.5px 1px black;
+}
+
+#banner{
+    background-color:rgb(53, 58, 63);
+    opacity: 90%;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    text-shadow: 2px 2px 1px black;
+}
+
+form #searchbar{
+    opacity: 100%;
+}
