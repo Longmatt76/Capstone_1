@@ -28,3 +28,14 @@ background-position: 60px;
 form #searchbar{
     opacity: 100%;
 }
+
+
+#about{
+    font-family: 'EB Garamond', serif;
+    font-size: larger;
+}
+
+#about p{
+    font-style: italic;
+    font-size: 1.25rem;
+}

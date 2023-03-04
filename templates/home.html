@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+{% block title %}The Boardgame Shelf{% endblock %}
+{% block header %} 
+<header>
+    <div class="container-fluid text-center" id="banner"><h1 class="display-5 font-weight-bold text-white">The Boardgame Shelf</h1>
+    </div>
+    <div class="container mt-5">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <button class="btn btn-secondary border border-dark" type="button" id="button-addon1">Search</button>
+          </div>
+          <input type="text" class="form-control form-control-lg border border-dark" placeholder=" Search Board Games">
+        </div></div>
+  </header>
+{% endblock %}
+    {% block content %}
+<div class="container bg-light my-5 p-3 border border-dark rounded" id="about"> <h3 class="text-center">Welcome to the Boardgame Shelf</h4>
+<p class="text-center">A board game collection management app</p>
+
+<ul class="list-group list-group-flush border border-dark rounded m-3">
+    <li class="list-group-item"><i class="fa-solid fa-check"></i> Store your boardgame collection</li>
+    <li class="list-group-item"><i class="fa-solid fa-check"></i> View detailed information on all of your games</li>
+    <li class="list-group-item"><i class="fa-solid fa-check"></i> Get an estimated value of your games or collection</li>
+    <li class="list-group-item"><i class="fa-solid fa-check"></i> Record playlogs of play sessions for all your games</li>
+    <li class="list-group-item"><i class="fa-solid fa-check"></i> Create a wishlish with automatic price alerts</li>
+    
+</ul></div>
+
+    {% endblock %}

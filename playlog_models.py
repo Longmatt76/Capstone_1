@@ -7,7 +7,7 @@ from user_models import db
 
 
 class Playlog(db.Model):
-    """stores a users gamelogs for game playthroughs"""
+    """stores a users playlogs for game playthroughs"""
 
     __tablename__ = "playlogs"
 
