@@ -8,7 +8,9 @@ import os
 from unittest import TestCase
 from sqlalchemy import exc
 
-from models import db, User, Gamelog
+from user_models import db, User
+from playlog_models import *
+from game_models import *
 
 os.environ['DATABASE_URL'] = "postgresql:///boardgames_test"
 
@@ -60,7 +62,7 @@ class UserModelTestCase(TestCase):
         db.session.commit()
 
         # User should have no gamelogs
-        self.assertEqual(len(u.gamelogs), 0)
+        self.assertEqual(len(u.playlogs), 0)
 
        
         """tests for signup"""

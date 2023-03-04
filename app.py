@@ -5,7 +5,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 
-from models import db, connect_db, User, Game, Gamelog, Collection, Wishlist, Mechanic, Category
+from user_models import db, connect_db, User
+from game_models import *
+from playlog_models import *
 
 CURR_USER_KEY = "curr_user"
 
