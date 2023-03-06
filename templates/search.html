@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Search Results{% endblock %}
+{% block content %}
+<div class="container-fluid bg-light">
+<h3 class=" display-5 text-justify-left text-align-center sitefont mb-3 pt-2 pl-2 font-weight-bold">Search Results:<span id="query" class="ml-2">"{{query}}"</span></h3><hr></div>
+<div class="container">
+<div class="row justify-content-between">
+{% for game in data['games']%}
+<div class="col-3"><div class="card p-2 bg-light my-1 border border-dark" id="card" >
+    <a href="/search/details" id="searchlink"> <img src="{{game['thumb_url']}}" width="287px" height="287px"  class="card-img-top border border-info">
+    <div class="card-body">
+     <h5 class="card-title">{{game['name']}}</h5>
+      <p class="card-text"><i class="fa-solid fa-user-group"></i> {{game['players']}} <i class="fa-regular fa-clock"></i> {{game['playtime']}}</p> </a> 
+    </div>
+  </div></div>
+
+
+{% endfor %}
+</div>
+</div>
+{% endblock %}
