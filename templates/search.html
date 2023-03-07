@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Search Results{% endblock %}
 {% block content %}
-<div class="container-fluid bg-light"> <div class="container"><form action="/search_results">
+<div class="container-fluid bg-light"> <div class="container"><form action="/search">
     <div class="input-group mb-3">
       <div class="input-group-prepend">
         <button class="btn border border-dark btn-info sitefont" type="submit" id="button-addon1">Search</button>
@@ -13,7 +13,7 @@
 <div class="row justify-content-between">
 {% for game in data['games']%}
 <div class="col-3"><div class="card p-2 bg-light my-1 border border-dark" id="card" >
-    <a href="/search/details" id="searchlink"> <img src="{{game['thumb_url']}}" width="287px" height="287px"  class="card-img-top border border-info">
+    <a href="/search/{{game['id']}}/game_details" id="searchlink"> <img src="{{game['thumb_url']}}" width="287px" height="287px"  class="card-img-top border border-info">
     <div class="card-body">
      <h5 class="card-title">{{game['name']}}</h5>
       <p class="card-text"><i class="fa-solid fa-user-group"></i> {{game['players']}} <i class="fa-regular fa-clock"></i> {{game['playtime']}}</p> </a> 

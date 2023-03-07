@@ -8,9 +8,9 @@
 <div class="container-fluid bg-light rounded border my-5 p-3">
   <div class="row justify-content-md-center m-3 p-3">
     <div class="col-4"><img src="/static/images/agri_catan-1 (2).png" width="625px" height="625px" alt=""></div>
-    <div class="col-4 mt-5 p-5>
+    <div class="col-4 mt-5 p-5">
        
-<form method="POST"> <h2 class="sitefont text-center">Welcome back!</h2> <hr>
+<form method="POST"> <h2 class="sitefont text-center">Welcome back!</h2> <hr/>
   {{ form.hidden_tag() }}
 
   {% for field in form if field.widget.input_type != 'hidden' %}

@@ -8,6 +8,8 @@ from game_models import *
 from playlog_models import *
 from forms import UserAddForm, UserEditForm, LoginForm
 import requests
+from flask_sqlalchemy import Pagination
+from bs4 import BeautifulSoup
 
 CURR_USER_KEY = "curr_user"
 
@@ -26,24 +28,6 @@ BASE_URL = 'https://api.boardgameatlas.com/api'
 client_id = 'XlXxjnv76F'
 
 connect_db(app)
-
-
-# **home and search routes**
-
-@app.route('/')
-def show_home():
-    '''displays the homepage'''
-    return render_template('home.html')
-
-
-@app.route('/search_results')
-def show_search():
-    '''queries the API with the search request and displays the results'''
-    query = request.args['search']
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
-    data = resp.json()
-    return render_template('search.html', data=data, query=query)
 
 
 # **user routes signin and signup**
@@ -98,7 +82,7 @@ def signup():
         return redirect("/")
 
     else:
-        return render_template('user/signup.html', form=form)
+        return render_template('users/signup.html', form=form)
 
 
 @app.route('/login', methods=["GET","POST"])
@@ -116,7 +100,7 @@ def login():
             return redirect('/')
         
 
-    return render_template('user/login.html', form= form)
+    return render_template('users/login.html', form= form)
 
 
 @app.route('/logout')
@@ -168,7 +152,7 @@ def profile(user_id):
         
 
 
-@app.route('/users/delete', methods=["POST"])
+@app.route('/users/delete', methods=["DELETE"])
 def delete_user():
     """Delete user."""
 
@@ -182,3 +166,35 @@ def delete_user():
     db.session.commit()
 
     return redirect("/signup")
+
+
+
+# **home and search routes**
+
+@app.route('/')
+def show_home():
+    '''displays the homepage'''
+    return render_template('home.html')
+
+
+@app.route('/search')
+def show_search():
+    '''queries the API with the search request and displays the results'''
+   
+    query = request.args['search']
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
+    data = resp.json()
+    return render_template('search.html', data=data, query=query)
+
+
+@app.route('/search/<string:api_id>/game_details')
+def show_game(api_id):
+    '''queries the API using the api's id for the game that was clicked on and displays 
+        that games details page'''
+
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'client_id': client_id, 'ids': api_id})
+    data = resp.json()
+    soup = BeautifulSoup(data, 'html.parser')
+    return render_template('games/details.html', data=data, soup=soup)

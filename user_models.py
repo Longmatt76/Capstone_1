@@ -46,9 +46,9 @@ class User(db.Model):
                             secondary='game_collections',
                             backref='users')
 
-    # wishes = db.relationship('Game',
-    #                          secondary='wishes',
-    #                          backref='users')
+    wishes = db.relationship('Game',
+                             secondary='wishes',
+                             backref='users_wishes')
 
     @classmethod
     def signup(cls, username, email, password, image_url):
