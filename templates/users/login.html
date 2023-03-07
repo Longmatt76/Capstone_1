@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block header %}<header>
+    <div class="container-fluid text-center" id="banner"><h1 class="display-4 font-weight-bold text-white sitefont">The Boardgame Shelf</h1>
+    </div>
+  </header>{% endblock %}
+
+{% block content %}
+<div class="container-fluid bg-light rounded border my-5 p-3">
+  <div class="row justify-content-md-center m-3 p-3">
+    <div class="col-4"><img src="/static/images/agri_catan-1 (2).png" width="625px" height="625px" alt=""></div>
+    <div class="col-4 mt-5 p-5>
+       
+<form method="POST"> <h2 class="sitefont text-center">Welcome back!</h2> <hr>
+  {{ form.hidden_tag() }}
+
+  {% for field in form if field.widget.input_type != 'hidden' %}
+    {% for error in field.errors %}
+      <span class="text-danger">{{ error }}</span>
+    {% endfor %}
+    {{ field(placeholder=field.label.text, class="form-control form-control-lg sitefont") }}
+  {% endfor %}
+<button type="submit" class="btn btn-info btn-block btn-lg sitefont border border-dark">Log in</button>
+<div class="sitefont text-center my-2">Not yet a member? Signup<a class="text-info" href="/signup"> here</a> </div>
+</form>  
+      
+    </div>
+    <div class="col-4"><img src="/static/images/feast_terra-1.png" width="625px" height="625px" alt=""></div>
+  </div>
+</div>
+
+
+{% endblock %}

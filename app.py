@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from user_models import db, connect_db, User
 from game_models import *
 from playlog_models import *
+from forms import UserAddForm, UserEditForm, LoginForm
 import requests
 
 CURR_USER_KEY = "curr_user"
@@ -27,15 +28,157 @@ client_id = 'XlXxjnv76F'
 connect_db(app)
 
 
+# **home and search routes**
 
 @app.route('/')
 def show_home():
+    '''displays the homepage'''
     return render_template('home.html')
+
 
 @app.route('/search_results')
 def show_search():
+    '''queries the API with the search request and displays the results'''
     query = request.args['search']
     resp = requests.get(f'{BASE_URL}/search',
-                params={'fuzzy_,match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
+                        params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
     data = resp.json()
     return render_template('search.html', data=data, query=query)
+
+
+# **user routes signin and signup**
+
+
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """Handle user signup."""
+
+    form = UserAddForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                image_url=form.image_url.data or User.image_url.default.arg,
+            )
+            db.session.commit()
+
+        except IntegrityError:
+            flash("Username already taken", 'danger')
+            return render_template('signup.html', form=form)
+
+        do_login(user)
+
+        return redirect("/")
+
+    else:
+        return render_template('user/signup.html', form=form)
+
+
+@app.route('/login', methods=["GET","POST"])
+def login():
+    """Handle login of user"""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data, form.password.data)
+        
+        if user:
+            do_login(user)
+            flash(f'Welcome back {user.username}', 'success')
+            return redirect('/')
+        
+
+    return render_template('user/login.html', form= form)
+
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+
+    do_logout()
+    flash("You have successfully logged out")
+
+    return redirect('/')
+
+
+@app.route('/users/<int:user_id>/profile')
+def show_user_profile(user_id):
+    """displays the user profile info"""
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template('users/profile.html', user=user)
+
+
+
+@app.route('/users/<int:user_id>/update', methods=["GET", "POST"])
+def profile(user_id):
+    """Update profile for current user."""
+    
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user= User.query.get_or_404(user_id)
+    form = UserEditForm(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username,form.password.data): 
+            user.username = form.username.data
+            user.email = form.email.data
+            user.image_url = form.image_url.data or "/static/images/default-pic.png"
+            user.header_image_url = form.header_image_url.data or "/static/images/boardgame_header.jpeg"
+           
+
+            db.session.commit()
+            return redirect(f"/users/{user.id}/profile")
+        flash("Access unauthorized, please reenter password", "danger")
+        
+
+    return render_template('users/update.html', form=form, user_id=user.id)
+    
+        
+
+
+@app.route('/users/delete', methods=["POST"])
+def delete_user():
+    """Delete user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect("/signup")

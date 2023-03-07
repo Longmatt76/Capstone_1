@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Search Results{% endblock %}
 {% block content %}
-<div class="container-fluid bg-light">
-<h3 class=" display-5 text-justify-left text-align-center sitefont mb-3 pt-2 pl-2 font-weight-bold">Search Results:<span id="query" class="ml-2">"{{query}}"</span></h3><hr></div>
+<div class="container-fluid bg-light"> <div class="container"><form action="/search_results">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <button class="btn border border-dark btn-info sitefont" type="submit" id="button-addon1">Search</button>
+      </div>
+      <input type="text" name="search" class="form-control form-control-lg border border-dark sitefont" placeholder=" Search Board Games">
+    </div></form></div> 
+<h3 class=" display-5 text-center text-align-center sitefont mb-3 pt-2 pl-2 font-weight-bold">Search Results:<span id="query" class="ml-2">"{{query}}"</span></h3><hr></div>
 <div class="container">
 <div class="row justify-content-between">
 {% for game in data['games']%}
