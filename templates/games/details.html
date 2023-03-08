@@ -1,34 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-6">
-    <div class="card mb-3" style="max-width: 540px;">
+<div class="container mt-5 bg-dark rounded p-3 sitefont" id="gamedeets">
+    <div class="row mt-3 rowski">
+        <div class="col">
+    <div class="card bg-dark mb-3" >
         <div class="row no-gutters">
-          <div class="col-md-4">
-            <img src="{{data['games'][0]['thumb_url']}}" width="200px" height="200px">
+          <div class="col-md-4 lickit">
+            <img src="{{data['games'][0]['thumb_url']}}" width="300px" height="350px" class="rounded border border-dark" >
           </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title font-weight-bold">{{data['games'][0]['name']}}:</h5>
-              <p class="card-text">{{data['games'][0]['description']}}</p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+          <div class="col-md-8 monkey">
+            <div class="card-body bg-dark m-2 rounded billy">
+              <h2 id="gametitle" class="card-title font-weight-bold text-white">{{data['games'][0]['name']}}:
+                <span class="text-info gt_span"> {% if data['games'][0]['year_published']%}({{ data['games'][0]['year_published']}}){% endif %}</span> </h2>
+                <div id="accordion">
+                    <div class="card bg-dark">
+                      <div id="headingOne" class="border border-dark rounded">
+                        <h5 class="mb-0">
+                          <button class="btn btn-link text-info" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            See description
+                          </button>
+                        </h5>
+                      </div>
+                      <div id="collapseOne" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            <p class="card-text text-white">{{soup}}</p>
+                        </div>
+                      </div>
+                    </div>
             </div>
+            <hr> <div><p class="text-light">Players: {{data['games'][0]['players']}}  | &nbsp;  Time: {{data['games'][0]['playtime']}} min  &nbsp; | &nbsp;  
+                 Age: {{data['games'][0]['min_age']}}+   &nbsp; </p>
           </div>
+          <p class=" text-white text-left">Designer: <span class="text-info"> {{data['games'][0]['primary_designer']['name']}}</span></p>
+          <p class=" text-white text-left">Publisher: <span class="text-info"> {{data['games'][0]['primary_publisher']['name']}}</span></p>
+          <a href="" class="si"><i class="fa-regular fa-flag text-info mt-3"></i></a> <span class="text-light"> &nbsp; Add to collection  &nbsp;| &nbsp;</span>
+          <a href="" class="si"><i class="fa-regular fa-heart text-info"></i></a> <span class="text-light"> &nbsp; Add to wishlist  &nbsp;| &nbsp;</span>
+          <a href="" class="si"><i class="fa-solid fa-pencil text-info"></i></a> <span class="text-light"> &nbsp; Add playlog &nbsp;</span>
         </div>
       </div>
     </div>
-    <div class="col-6">
-    <div class="card bg-dark text-white">
-        <img src="..." class="card-img" alt="...">
-        <div class="card-img-overlay">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-          <p class="card-text">Last updated 3 mins ago</p>
-        </div>
-      </div>
-    </div>
+   
     </div>
 </div>
-{{soup}}
 {% endblock %}

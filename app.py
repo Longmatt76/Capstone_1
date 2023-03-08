@@ -10,6 +10,7 @@ from forms import UserAddForm, UserEditForm, LoginForm
 import requests
 from flask_sqlalchemy import Pagination
 from bs4 import BeautifulSoup
+from functions import remove_tags
 
 CURR_USER_KEY = "curr_user"
 
@@ -85,7 +86,7 @@ def signup():
         return render_template('users/signup.html', form=form)
 
 
-@app.route('/login', methods=["GET","POST"])
+@app.route('/login', methods=["GET", "POST"])
 def login():
     """Handle login of user"""
 
@@ -93,14 +94,13 @@ def login():
 
     if form.validate_on_submit():
         user = User.authenticate(form.username.data, form.password.data)
-        
+
         if user:
             do_login(user)
             flash(f'Welcome back {user.username}', 'success')
             return redirect('/')
-        
 
-    return render_template('users/login.html', form= form)
+    return render_template('users/login.html', form=form)
 
 
 @app.route('/logout')
@@ -122,34 +122,29 @@ def show_user_profile(user_id):
     return render_template('users/profile.html', user=user)
 
 
-
 @app.route('/users/<int:user_id>/update', methods=["GET", "POST"])
 def profile(user_id):
     """Update profile for current user."""
-    
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user= User.query.get_or_404(user_id)
+    user = User.query.get_or_404(user_id)
     form = UserEditForm(obj=user)
 
     if form.validate_on_submit():
-        if User.authenticate(user.username,form.password.data): 
+        if User.authenticate(user.username, form.password.data):
             user.username = form.username.data
             user.email = form.email.data
             user.image_url = form.image_url.data or "/static/images/default-pic.png"
             user.header_image_url = form.header_image_url.data or "/static/images/boardgame_header.jpeg"
-           
 
             db.session.commit()
             return redirect(f"/users/{user.id}/profile")
         flash("Access unauthorized, please reenter password", "danger")
-        
 
     return render_template('users/update.html', form=form, user_id=user.id)
-    
-        
 
 
 @app.route('/users/delete', methods=["DELETE"])
@@ -168,7 +163,6 @@ def delete_user():
     return redirect("/signup")
 
 
-
 # **home and search routes**
 
 @app.route('/')
@@ -180,7 +174,7 @@ def show_home():
 @app.route('/search')
 def show_search():
     '''queries the API with the search request and displays the results'''
-   
+
     query = request.args['search']
     resp = requests.get(f'{BASE_URL}/search',
                         params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
@@ -191,10 +185,15 @@ def show_search():
 @app.route('/search/<string:api_id>/game_details')
 def show_game(api_id):
     '''queries the API using the api's id for the game that was clicked on and displays 
-        that games details page'''
+        that games details page parsing out the html tags from the api data'''
 
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
-    soup = BeautifulSoup(data, 'html.parser')
+    
+    soup = remove_tags(data['games'][0]['description'])
+    
     return render_template('games/details.html', data=data, soup=soup)
+
+
+

@@ -80,4 +80,32 @@ ul i{
     font-size: x-large;
 }
 
+#gametitle{
+    text-shadow: 1.5px 1.5px 1px black;
+}
 
+.gt_span{
+    font-size: smaller;
+}
+
+.rowski{
+    border-top: 1.5px solid black;
+    border-bottom:1.5px solid black; 
+    
+}
+
+#gamedeets{
+    outline: 2px solid black;
+}
+
+.monkey{
+    border-left: 1.5px solid black;
+    border-right: 1.5px solid black;
+    border-bottom: 1.5px solid black;
+     
+}
+
+.lickit{
+    border-bottom: 1.5px solid black;
+    border-left:  1.5px solid black;
+}
