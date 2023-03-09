@@ -109,3 +109,20 @@ ul i{
     border-bottom: 1.5px solid black;
     border-left:  1.5px solid black;
 }
+
+.scrolling-wrapper {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    
+  }
+  
+.scrolling-wrapper img{
+    display: inline-block;
+    max-height: 350px;
+}
+
+#line{
+    background-color: black;
+    height: 1px;
+}

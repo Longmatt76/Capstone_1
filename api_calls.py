@@ -4,16 +4,20 @@ BASE_URL = 'https://api.boardgameatlas.com/api'
 client_id = 'XlXxjnv76F'
 
 
-def search_API():
-    resp = requests.get(f'{BASE_URL}/search',
-                params={'fuzzy_,match': 'true', 'limit': 15, 'client_id': client_id, 'name': 'catan'})
+# def search_API():
+#     resp = requests.get(f'{BASE_URL}/images',
+#                 params={'fuzzy_,match': 'true', 'limit': 15, 'client_id': client_id, 'name': 'catan'})
     
 
-    data = resp.json()
-    for num in range(len(data['games'])):
-        print(data['games'][num]['thumb_url'])
+#     data = resp.json()
+#     for num in range(len(data['games'])):
+#         print(data['games'][num]['thumb_url'])
 
+res = requests.get(f'{BASE_URL}/images',
+                        params={'client_id': client_id, 'limit':10 })
 
+images = res.text
+print(images)
 
 
 

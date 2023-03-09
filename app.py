@@ -184,16 +184,28 @@ def show_search():
 
 @app.route('/search/<string:api_id>/game_details')
 def show_game(api_id):
-    '''queries the API using the api's id for the game that was clicked on and displays 
-        that games details page parsing out the html tags from the api data'''
+    '''Using the api's id for the clicked on game it queries the API three times
+    (for game details,images, and videos)and displays that games details page 
+    parsing out the html tags from the api data'''
 
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
     
     soup = remove_tags(data['games'][0]['description'])
+
+    resp2 = requests.get(f'{BASE_URL}/game/images',
+                        params={'pretty': 'true', 'client_id': client_id, 'limit':50, 'game_id': api_id })
+        
+    images = resp2.json()
+
+    resp3 = requests.get(f'{BASE_URL}/game/videos',
+                        params={'pretty': 'true', 'client_id': client_id, 'limit':50, 'game_id': api_id })
     
-    return render_template('games/details.html', data=data, soup=soup)
+    videos = resp3.json()
+
+    return render_template('games/details.html', data=data, soup=soup, 
+                           images=images, videos=videos)
 
 
 
