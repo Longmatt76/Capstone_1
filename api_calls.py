@@ -13,11 +13,22 @@ client_id = 'XlXxjnv76F'
 #     for num in range(len(data['games'])):
 #         print(data['games'][num]['thumb_url'])
 
-res = requests.get(f'{BASE_URL}/images',
-                        params={'client_id': client_id, 'limit':10 })
+skip = 0
+games = []
 
-images = res.text
-print(images)
+while True:
+    print('-----')
+    url =       f'{BASE_URL}/search?skip={skip}&limit=30&name=Catan&pretty=true&client_id={client_id}'
+    print('Requesting', url)
+    res = requests.get(url)
+    data = res.json()
+    if data['games']== 0:
+        break
+   
+    games.extend(data['games'])
+    skip = skip + 30
+
+    
 
 
 

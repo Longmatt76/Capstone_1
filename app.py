@@ -6,10 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from user_models import db, connect_db, User
 from game_models import *
 from playlog_models import *
-from forms import UserAddForm, UserEditForm, LoginForm
+from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
 import requests
 from flask_sqlalchemy import Pagination
-from bs4 import BeautifulSoup
 from functions import remove_tags
 
 CURR_USER_KEY = "curr_user"
@@ -97,7 +96,7 @@ def login():
 
         if user:
             do_login(user)
-            flash(f'Welcome back {user.username}', 'success')
+            flash(f'Welcome back {user.username}', 'info')
             return redirect('/')
 
     return render_template('users/login.html', form=form)
@@ -108,7 +107,7 @@ def logout():
     """Handle logout of user."""
 
     do_logout()
-    flash("You have successfully logged out")
+    flash("You have successfully logged out", 'info')
 
     return redirect('/')
 
@@ -138,7 +137,7 @@ def profile(user_id):
             user.username = form.username.data
             user.email = form.email.data
             user.image_url = form.image_url.data or "/static/images/default-pic.png"
-            user.header_image_url = form.header_image_url.data or "/static/images/boardgame_header.jpeg"
+            user.header_image_url = form.header_image_url.data or "/static/images/boardgame_shelf.png"
 
             db.session.commit()
             return redirect(f"/users/{user.id}/profile")
@@ -147,20 +146,66 @@ def profile(user_id):
     return render_template('users/update.html', form=form, user_id=user.id)
 
 
-@app.route('/users/delete', methods=["DELETE"])
-def delete_user():
+@app.route('/users/<int:user_id>/game_collection')
+def show_game_collecion(user_id):
+    """show a users collection"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = User.query.get_or_404(user_id)
+    
+
+    return render_template('/users/collection.html', user=user)
+
+
+@app.route('/users/<string:api_id>/game_collection')
+def add_game(api_id):
+    """adds a game to the user's collection"""
+    if not g.user:
+        flash("You must be logged in to add a game to your collection, please login or signup", "info")
+        return redirect("/login")
+    
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'client_id': client_id, 'ids': api_id})
+    data = resp.json()
+
+    game = Game(id=api_id, name=data['games'][0]['name'],
+                thumb_url=data['games'][0]['thumb_url'])
+    
+    db.session.add(game)
+    db.session.commit()
+     
+    added_game = GameCollection(user_id=g.user.id, game_id=api_id)
+    db.session.add(added_game)
+    db.session.commit()
+
+    return render_template('users/collection.html', game=game)
+
+
+@app.route('/users/<int:user_id>/delete', methods=["GET", "DELETE"])
+def delete_user(user_id):
     """Delete user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    
+    user = g.user
+    form = DeleteUserForm(obj=user)
 
-    do_logout()
+    if form.validate_on_submit():
+        if User.authenticate(user.username.data, form.password.data):
+            do_logout()
+            db.session.delete(user)
+            db.session.commit()
+            flash('Sorry to see you go, rejoin anytime!', 'success')
+        return redirect('/')
+    
+    flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger')
+    return render_template('users/delete.html', form=form)
 
-    db.session.delete(g.user)
-    db.session.commit()
-
-    return redirect("/signup")
+    
 
 
 # **home and search routes**
@@ -179,13 +224,14 @@ def show_search():
     resp = requests.get(f'{BASE_URL}/search',
                         params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
     data = resp.json()
+    
     return render_template('search.html', data=data, query=query)
 
 
 @app.route('/search/<string:api_id>/game_details')
 def show_game(api_id):
     '''Using the api's id for the clicked on game it queries the API three times
-    (for game details,images, and videos)and displays that games details page 
+    (for game details,images, and videos) then displays that games details page 
     parsing out the html tags from the api data'''
 
     resp = requests.get(f'{BASE_URL}/search',

@@ -126,3 +126,19 @@ ul i{
     background-color: black;
     height: 1px;
 }
+
+.si {
+    color: white
+}
+
+.si:hover{
+    color: #17a2b8;
+    text-decoration: none;
+}
+
+#pic{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+
+}

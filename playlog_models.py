@@ -19,7 +19,7 @@ class Playlog(db.Model):
                         db.ForeignKey('users.id'),
                         nullable=False,)
 
-    game_id = db.Column(db.Integer,
+    game_id = db.Column(db.Text,
                         db.ForeignKey('games.id'),
                         nullable=False,)
 

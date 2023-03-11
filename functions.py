@@ -1,5 +1,4 @@
-from app import *
-
+from bs4 import BeautifulSoup
 
 def remove_tags(html):
     """parse html tags from the api data"""

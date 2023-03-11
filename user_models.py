@@ -23,7 +23,7 @@ class User(db.Model):
                       nullable=False,
                       unique=True,)
 
-    username = db.Column(db.Text,
+    username = db.Column(db.String(25),
                          nullable=False,
                          unique=True,)
 
@@ -31,7 +31,7 @@ class User(db.Model):
                           default="/static/images/default-pic.png",)
 
     header_image_url = db.Column(db.Text,
-                                 default="/static/images/boardgame_header.jpeg")
+                                 default="/static/images/boardgame_shelf.png")
 
     password = db.Column(db.Text,
                          nullable=False,)
