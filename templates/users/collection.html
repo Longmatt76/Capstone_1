@@ -9,13 +9,13 @@
              <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h4 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h4></a> </div> </div> <hr class="bg-dark">
               <div class="row text-center p-0">
               <div class="col-4 p-0">Games
-                <p class="text-info">243</p>
+                <p class="text-info">{{g.user.games | length }}</p>
             </div>
             <div class="col-4 p-0">Wishes
-                <p class="text-info">32</p>
+                <p class="text-info">{{g.user.wishes | length }}</p>
             </div>
             <div class="col-4 p-0">Playlogs
-                <p class="text-info">16</p>
+                <p class="text-info">{{g.user.playlogs | length }}</p>
             </div>
             </div>
           </div>
@@ -24,23 +24,29 @@
           <table class="table table-dark">
             <thead class="thead-dark border border-dark">
               <tr>
-                <th scope="col" class="">Id</th>
-                <th scope="col" class="">Thumbnail</th>
+                
+                <th scope="col" class=""></th>
                 <th scope="col" class="">Name</th>
                 <th scope="col" class="">Your Rating</th>
                 <th scope="col" class="">Comments</th>
                 <th scope="col" class="">Used Value</th>
+                <th scope="col" class=""></th>
+                
               </tr>
             </thead>
-            <tbody><tr>
-              <th scope="row" class="border border-secondary">1</th>
-              <td class="border border-secondary"><img src="https://s3-us-west-1.amazonaws.com/5cc.images/games/uploaded/1629324722072.jpg" height="60px" width="60px"></td>
-              <td class="border border-secondary">Catan</td>
-              <td class="border border-secondary"> 7.5</td>
-              <td class="border border-secondary">Wood and sheep jokes abound</td>
-              <td class="border border-secondary">$56</td>
+            <tbody>
+              {% for game in g.user.games %}
+              <tr>
+              
+              <td class="border border-secondary"><a href="/search/{{game.id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
+              <td class="border border-secondary"><a class="si" href="/search/{{game.id}}/game_details">{{game.name}}</a> </td>
+              <td class="border border-secondary"><a class="si" href="">{{game.rating}}</a></td>
+              <td class="border border-secondary"><a class="si" href="">{{game.comments}}</a> </td>
+              <td class="border border-secondary"><a class="si" href=""> {{game.used_value}}</a></td>
+              <td class="border border-secondary"><a class="si" href="/users/remove_game/{{game.id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
 
-            </tr></tbody>
+            </tr>{% endfor %}
+          </tbody>
           </table>
         </div>
     </div>

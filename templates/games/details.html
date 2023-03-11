@@ -34,7 +34,7 @@
           <p class=" text-white text-left">Designer: <span class="text-light">{% if data['games'][0]['primary_designer']%} 
             {{data['games'][0]['primary_designer']['name']}} {% endif %}</span></p>
           <p class=" text-white text-left">Publisher: <span class="text-light"> {{data['games'][0]['primary_publisher']['name']}}</span></p>
-          <a href="/users/{{data['games'][0]['id']}}/game_collection" class="si"><i class="fa-regular fa-flag mt-3"></i> <span class=""> &nbsp; Add to collection  &nbsp;|&nbsp;</span></a>
+          <a href="/users/add_game/{{data['games'][0]['id']}}" class="si"><i class="fa-regular fa-flag mt-3"></i> <span class=""> &nbsp; Add to collection  &nbsp;|&nbsp;</span></a>
           <a href="" class="si"><i class="fa-regular fa-heart"></i><span > &nbsp; Add to wishlist  &nbsp;| &nbsp;</span></a> 
           <a href="" class="si"><i class="fa-regular fa-pen-to-square"></i> <span > &nbsp; Add playlog &nbsp;|&nbsp;</span></a>
           <a href="" class="si"><i class="fa-solid fa-magnifying-glass-dollar"></i> <span> &nbsp; Get used value &nbsp;</span></a>

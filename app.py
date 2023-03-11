@@ -3,9 +3,9 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from user_models import db, connect_db, User
-from game_models import *
-from playlog_models import *
+from models.user_models import db, connect_db, User
+from models.game_models import *
+from models.playlog_models import *
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
 import requests
 from flask_sqlalchemy import Pagination
@@ -159,9 +159,11 @@ def show_game_collecion(user_id):
     return render_template('/users/collection.html', user=user)
 
 
-@app.route('/users/<string:api_id>/game_collection')
+@app.route('/users/add_game/<string:api_id>')
 def add_game(api_id):
-    """adds a game to the user's collection"""
+    """ adds game to the collective games db and then to the user's game_collection, if game already
+    exists in the games db then it just adds it to the users collection"""
+
     if not g.user:
         flash("You must be logged in to add a game to your collection, please login or signup", "info")
         return redirect("/login")
@@ -181,6 +183,21 @@ def add_game(api_id):
     db.session.commit()
 
     return render_template('users/collection.html', game=game)
+
+
+@app.route('/users/remove_game/<string:game_id>')
+def remove_game(game_id):
+    """removes a game from a users collection and 
+    returns them to the updated collection page"""
+
+    user_id = g.user.id
+    game_to_remove = GameCollection.query.get((user_id, game_id))
+    db.session.delete(game_to_remove)
+    db.session.commit()
+
+    return render_template('users/collection.html')
+
+
 
 
 @app.route('/users/<int:user_id>/delete', methods=["GET", "DELETE"])

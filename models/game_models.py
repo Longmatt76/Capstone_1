@@ -1,7 +1,7 @@
 """sqlalchemy game models for the Boardgame Shelf"""
 
 from flask_sqlalchemy import SQLAlchemy
-from user_models import db
+from app import db
 
 
 
@@ -19,7 +19,11 @@ class Game(db.Model):
 
     thumb_url = db.Column(db.Text)
 
-    comments = db.Column(db.String(90))
+    comments = db.Column(db.String(90),
+                         default="add comments")
+
+    rating = db.Column(db.Text, 
+                       default= 'add rating')
 
     used_value = db.Column(db.Integer)
 
@@ -90,6 +94,7 @@ class GameCollection(db.Model):
     """stores the games in a users collection"""
 
     __tablename__ = "game_collections"
+
 
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id'),

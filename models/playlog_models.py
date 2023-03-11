@@ -1,8 +1,7 @@
 """sqlalchemy gamelog models for the Boardgame Shelf"""
 
 from flask_sqlalchemy import SQLAlchemy
-
-from user_models import db
+from app import db
 
 
 
