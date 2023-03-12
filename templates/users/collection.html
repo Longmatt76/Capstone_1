@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container"><form action="/search">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <button class="btn border border-dark btn-info sitefont" type="submit" id="button-addon1">Search</button>
+    </div>
+    <input type="text" name="search" class="form-control form-control-lg border border-dark sitefont" placeholder=" Search Board Games">
+  </div></form></div> 
 <div class="container mt-5 sitefont">
     <div class="row">
         <div class="col-4 border border-dark bg-dark p-3 rounded"> <div class="card bg-light" >
@@ -27,20 +34,41 @@
                 
                 <th scope="col" class=""></th>
                 <th scope="col" class="">Name</th>
-                <th scope="col" class="">Your Rating</th>
+                <th scope="col" class="" data-toggle="tooltip" data-placement="top"
+                    title="Enter a rating between 1.0 - 10.0 ">Your Ratings</th>
                 <th scope="col" class="">Comments</th>
-                <th scope="col" class="">Used Value</th>
+                <th scope="col" class="" data-toggle="tooltip" data-placement="top"
+                title= "By clicking 'get value' we search recent used sales prices of your game 
+                and average them to arrive at an estimated value ">Used Value</th>
                 <th scope="col" class=""></th>
                 
               </tr>
             </thead>
             <tbody>
               {% for game in g.user.games %}
-              <tr>
+              <tr>       <div class="modal" tabindex="-1" id="{{game.id}}" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-light">
+                      <h5 class="modal-title">Edit Rating: {{game.name}}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                     <form action="/users/edit_game/{{game.id}}" method="PATCH"></form>
+                    </div>
+                    <div class="modal-footer bg-light">
+                      <button type="button" class="btn btn-info">Save changes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               <td class="border border-secondary"><a href="/search/{{game.id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
               <td class="border border-secondary"><a class="si" href="/search/{{game.id}}/game_details">{{game.name}}</a> </td>
-              <td class="border border-secondary"><a class="si" href="">{{game.rating}}</a></td>
+              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#{{game.id}}">{{game.rating}}</a></td>
               <td class="border border-secondary"><a class="si" href="">{{game.comments}}</a> </td>
               <td class="border border-secondary"><a class="si" href=""> {{game.used_value}}</a></td>
               <td class="border border-secondary"><a class="si" href="/users/remove_game/{{game.id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
@@ -51,4 +79,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

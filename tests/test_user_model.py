@@ -8,9 +8,9 @@ import os
 from unittest import TestCase
 from sqlalchemy import exc
 
-from user_models import db, User
-from playlog_models import *
-from game_models import *
+from models.user_models import db, User
+from models.playlog_models import *
+from models.game_models import *
 
 os.environ['DATABASE_URL'] = "postgresql:///boardgames_test"
 

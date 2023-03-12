@@ -9,7 +9,7 @@ from models.playlog_models import *
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
 import requests
 from flask_sqlalchemy import Pagination
-from functions import remove_tags
+from functions import remove_tags, get_or_create_game
 
 CURR_USER_KEY = "curr_user"
 
@@ -152,9 +152,8 @@ def show_game_collecion(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
+
     user = User.query.get_or_404(user_id)
-    
 
     return render_template('/users/collection.html', user=user)
 
@@ -167,17 +166,13 @@ def add_game(api_id):
     if not g.user:
         flash("You must be logged in to add a game to your collection, please login or signup", "info")
         return redirect("/login")
-    
+
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
 
-    game = Game(id=api_id, name=data['games'][0]['name'],
-                thumb_url=data['games'][0]['thumb_url'])
-    
-    db.session.add(game)
-    db.session.commit()
-     
+    game = get_or_create_game(api_id,data)
+
     added_game = GameCollection(user_id=g.user.id, game_id=api_id)
     db.session.add(added_game)
     db.session.commit()
@@ -198,6 +193,10 @@ def remove_game(game_id):
     return render_template('users/collection.html')
 
 
+@app.route('users/edit_game/<string:game_id>', methods=['PATCH'])
+def edit_game():
+    """edits a users game info for games in their game collection"""
+    return redirect('/')
 
 
 @app.route('/users/<int:user_id>/delete', methods=["GET", "DELETE"])
@@ -207,7 +206,7 @@ def delete_user(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
+
     user = g.user
     form = DeleteUserForm(obj=user)
 
@@ -218,11 +217,9 @@ def delete_user(user_id):
             db.session.commit()
             flash('Sorry to see you go, rejoin anytime!', 'success')
         return redirect('/')
-    
+
     flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger')
     return render_template('users/delete.html', form=form)
-
-    
 
 
 # **home and search routes**
@@ -241,7 +238,7 @@ def show_search():
     resp = requests.get(f'{BASE_URL}/search',
                         params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
     data = resp.json()
-    
+
     return render_template('search.html', data=data, query=query)
 
 
@@ -251,24 +248,38 @@ def show_game(api_id):
     (for game details,images, and videos) then displays that games details page 
     parsing out the html tags from the api data'''
 
+    # if g.user:
+    #     ids = [id for game in g.user.games] + [g.user.id]
+    #     games = (GameCollection
+    #                 .query
+    #                 .filter(.user_id.in_(ids))
+    #                 .order_by(Message.timestamp.desc())
+    #                 .limit(100)
+    #                 .all())
+
+
+    #     likes = [like.id for like in g.user.likes]
+
+    #     return render_template('home.html', messages=messages, likes=likes)
+
+    # else:
+    #     return render_template('home-anon.html')
+
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
-    
+
     soup = remove_tags(data['games'][0]['description'])
 
     resp2 = requests.get(f'{BASE_URL}/game/images',
-                        params={'pretty': 'true', 'client_id': client_id, 'limit':50, 'game_id': api_id })
-        
+                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
+
     images = resp2.json()
 
     resp3 = requests.get(f'{BASE_URL}/game/videos',
-                        params={'pretty': 'true', 'client_id': client_id, 'limit':50, 'game_id': api_id })
-    
+                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
+
     videos = resp3.json()
 
-    return render_template('games/details.html', data=data, soup=soup, 
+    return render_template('games/details.html', data=data, soup=soup,
                            images=images, videos=videos)
-
-
-

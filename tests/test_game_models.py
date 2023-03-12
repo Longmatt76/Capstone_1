@@ -8,7 +8,7 @@ import os
 from unittest import TestCase
 
 
-from user_models import db, User, Game, Collection
+from models.user_models import db, User, Game, Collection
 
 os.environ['DATABASE_URL'] = "postgresql:///boardgames_test"
 

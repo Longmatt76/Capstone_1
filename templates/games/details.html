@@ -34,6 +34,7 @@
           <p class=" text-white text-left">Designer: <span class="text-light">{% if data['games'][0]['primary_designer']%} 
             {{data['games'][0]['primary_designer']['name']}} {% endif %}</span></p>
           <p class=" text-white text-left">Publisher: <span class="text-light"> {{data['games'][0]['primary_publisher']['name']}}</span></p>
+          
           <a href="/users/add_game/{{data['games'][0]['id']}}" class="si"><i class="fa-regular fa-flag mt-3"></i> <span class=""> &nbsp; Add to collection  &nbsp;|&nbsp;</span></a>
           <a href="" class="si"><i class="fa-regular fa-heart"></i><span > &nbsp; Add to wishlist  &nbsp;| &nbsp;</span></a> 
           <a href="" class="si"><i class="fa-regular fa-pen-to-square"></i> <span > &nbsp; Add playlog &nbsp;|&nbsp;</span></a>
@@ -56,7 +57,7 @@
 </div>
 </div>
 <div class="container bg-dark rounded p-3" id="gamedeets">
-  <h3 id="gametitle" class="sitefont font-weight-bold text-white">Videos:&nbsp;<span class="text-info"></h3></span> <hr id="line">
+  <h3 id="gametitle" class="sitefont font-weight-bold text-white">Videos:&nbsp;<span class="text-info">{{videos['videos'][0]['id'] | length}}</h3></span> <hr id="line">
 <div class="scrolling-wrapper">
   {% for video in videos['videos']%}
  <a href="{{video['url']}}"><img class="border border-dark" src="{{video['image_url']}}" alt=""></a> 

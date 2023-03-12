@@ -20,12 +20,13 @@ class Game(db.Model):
     thumb_url = db.Column(db.Text)
 
     comments = db.Column(db.String(90),
-                         default="add comments")
+                         default="add comment")
 
     rating = db.Column(db.Text, 
                        default= 'add rating')
 
-    used_value = db.Column(db.Integer)
+    used_value = db.Column(db.Text,
+                           default= 'get value')
 
     def __repr__(self):
         return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
