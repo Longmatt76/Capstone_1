@@ -45,3 +45,7 @@ while True:
 
 # for property in data['games']:
 #     print(property)
+
+
+def this_is_test():
+    return('test')
