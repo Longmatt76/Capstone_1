@@ -7,13 +7,14 @@
     </div>
     <input type="text" name="search" class="form-control form-control-lg border border-dark sitefont" placeholder=" Search Board Games">
   </div></form></div> 
-<div class="container mt-5 sitefont">
+<div class="container my-5 sitefont">
     <div class="row">
         <div class="col-4 border border-dark bg-dark p-3 rounded"> <div class="card bg-light" >
             <img class="card-img-top border border-dark" src="{{g.user.header_image_url}}" width="250" height="100px">
             <div class="card-body">
               <div class="row">
-             <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h4 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h4></a> </div> </div> <hr class="bg-dark">
+             <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h4 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h4></a> </div> 
+             <p class="lead text-info">Collection Value:<span class="text-black" id="cash">&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $</span>&nbsp;586.34 </p></div> <hr class="bg-dark">
               <div class="row text-center p-0">
               <div class="col-4 p-0">Games
                 <p class="text-info">{{g.user.games | length }}</p>
@@ -28,7 +29,7 @@
           </div>
           </div> </div>
         <div class="col-8 bg-dark rounded"> 
-          <table class="table table-dark">
+          <table class="table table-dark table-striped">
             <thead class="thead-dark border border-dark">
               <tr>
                 
@@ -46,7 +47,7 @@
             </thead>
             <tbody>
               {% for game in g.user.games %}
-              <tr>       <div class="modal" tabindex="-1" id="{{game.id}}" role="dialog">
+              <tr>       <div class="modal" tabindex="-1" id="{{game.name}}" role="dialog">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header bg-light">
@@ -56,22 +57,64 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                     <form action="/users/edit_game/{{game.id}}" method="PATCH"></form>
+                     <form action="/games/edit_rating/{{game.game_id}}" method="POST">
+                      <div class="form-group">
+                        <label for="select_rating">Your Rating:</label>
+                        <select class="form-control" id="select_rating" name="rating">
+                        <option>10 &nbsp;"masterpiece"</option>
+                        <option>9  &nbsp;"amazing"</option>
+                        <option>8  &nbsp;"great"</option>
+                        <option>7  &nbsp;"good"</option>
+                        <option>6  &nbsp;"decent"</option>
+                        <option>5  &nbsp;"so so"</option>
+                        <option>4  &nbsp;"not good"</option>
+                        <option>3  &nbsp;"why do I own this?"</option>
+                        <option>2  &nbsp;"terrible"</option>
+                        <option>1  &nbsp;"piece of &nbsp;$#&#"</option>
+                      </select>
+                      </div>
+                      <button type="submit" class="btn btn-info">Save changes</button>
+                     </form>
                     </div>
                     <div class="modal-footer bg-light">
-                      <button type="button" class="btn btn-info">Save changes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal" tabindex="-1" id="{{game.game_id}}" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-light">
+                      <h5 class="modal-title">Add Comments: {{game.name}}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                     <form action="/games/edit_comments/{{game.game_id}}" method="POST">
+                      <div class="form-group">
+                        <label for="add_comment">Your Comments:</label>
+                        <textarea class="form-control" id="add_comment" rows="3" name="comment"></textarea>
+                      </div>
+                      <button type="submit" class="btn btn-info">Save changes</button>
+                     </form>
+                    </div>
+                    <div class="modal-footer bg-light">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                   </div>
                 </div>
               </div>
               
-              <td class="border border-secondary"><a href="/search/{{game.id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
-              <td class="border border-secondary"><a class="si" href="/search/{{game.id}}/game_details">{{game.name}}</a> </td>
-              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#{{game.id}}">{{game.rating}}</a></td>
-              <td class="border border-secondary"><a class="si" href="">{{game.comments}}</a> </td>
-              <td class="border border-secondary"><a class="si" href=""> {{game.used_value}}</a></td>
-              <td class="border border-secondary"><a class="si" href="/users/remove_game/{{game.id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
+              
+              <td class="border border-secondary"><a href="/search/{{game.game_id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
+              <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a> </td>
+              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#{{game.name}}">{{game.rating}}</a></td>
+              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#{{game.game_id}}">{{game.comments}}</a> </td>
+              <td class="border border-secondary"><a class="si" href="/games/value_game/{{game.game_id}}"> $ {{game.used_value}}</a></td>
+              <td class="border border-secondary"><a class="si" href="/games/remove_game/{{game.game_id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
 
             </tr>{% endfor %}
           </tbody>

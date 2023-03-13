@@ -1,7 +1,7 @@
 """sqlalchemy gamelog models for the Boardgame Shelf"""
 
 from flask_sqlalchemy import SQLAlchemy
-from app import db
+from user_models import db
 
 
 
@@ -19,8 +19,12 @@ class Playlog(db.Model):
                         nullable=False,)
 
     game_id = db.Column(db.Text,
-                        db.ForeignKey('games.id'),
                         nullable=False,)
+    
+    name = db.Column(db.Text,
+                     nullable=False,)
+
+    thumb_url = db.Column(db.Text)
 
     date_of_playthrough = db.Column(db.Date)
 

@@ -1,35 +1,22 @@
 """sqlalchemy game models for the Boardgame Shelf"""
 
 from flask_sqlalchemy import SQLAlchemy
-from app import db
+from user_models import db
 
 
 
-class Game(db.Model):
-    """stores detailed game data in the db"""
+# class Game(db.Model):
+#     """stores detailed game data in the db"""
 
-    __tablename__ = 'games'
+#     __tablename__ = 'games'
 
-    id = db.Column(db.Text,
-                   primary_key=True,)
+#     id = db.Column(db.Text,
+#                    primary_key=True,)
 
-    name = db.Column(db.Text,
-                     nullable=False,
-                     unique=True,)
 
-    thumb_url = db.Column(db.Text)
 
-    comments = db.Column(db.String(90),
-                         default="add comment")
-
-    rating = db.Column(db.Text, 
-                       default= 'add rating')
-
-    used_value = db.Column(db.Text,
-                           default= 'get value')
-
-    def __repr__(self):
-        return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
+#     def __repr__(self):
+#         return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
 
 
 # class Mechanic(db.Model):
@@ -98,14 +85,28 @@ class GameCollection(db.Model):
 
 
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
+                        db.ForeignKey('users.id', ondelete='CASCADE'),
                         primary_key=True,)
 
     game_id = db.Column(db.Text,
-                        db.ForeignKey('games.id'),
                         primary_key=True,)
     
+    
+    name = db.Column(db.Text,
+                     nullable=False,)
 
+    thumb_url = db.Column(db.Text)
+    
+    comments = db.Column(db.String(90),
+                         default="add comment")
+
+    rating = db.Column(db.Text, 
+                       default= 'add rating')
+
+    used_value = db.Column(db.Text,
+                           default= 'get value')
+    
+    
 
 class Wishlist(db.Model):
     '''stores games in a users wishlist'''
@@ -113,12 +114,16 @@ class Wishlist(db.Model):
     __tablename__ = "wishes"
 
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
+                        db.ForeignKey('users.id', ondelete='CASCADE'),
                         primary_key=True,)
 
     game_id = db.Column(db.Text,
-                        db.ForeignKey('games.id'),
                         primary_key=True,)
+    
+    name = db.Column(db.Text,
+                     nullable=False,)
+
+    thumb_url = db.Column(db.Text)
 
     subscribe_price_alerts = db.Column(db.Boolean,
                                        default=False)

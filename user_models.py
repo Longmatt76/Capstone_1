@@ -42,12 +42,10 @@ class User(db.Model):
     playlogs = db.relationship('Playlog',
                                backref='users')
 
-    games = db.relationship('Game',
-                            secondary='game_collections',
-                            backref='users')
+    games = db.relationship('GameCollection',
+                               backref='users')
 
-    wishes = db.relationship('Game',
-                             secondary='wishes',
+    wishes = db.relationship('Wishlist',
                              backref='users_wishes')
 
     @classmethod

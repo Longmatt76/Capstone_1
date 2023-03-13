@@ -3,13 +3,13 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from models.user_models import db, connect_db, User
-from models.game_models import *
-from models.playlog_models import *
+from user_models import db, connect_db, User
+from game_models import GameCollection, Wishlist
+from playlog_models import Playlog, Player, Playthrough
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
 import requests
 from flask_sqlalchemy import Pagination
-from functions import remove_tags, get_or_create_game
+from functions import average
 
 CURR_USER_KEY = "curr_user"
 
@@ -30,7 +30,7 @@ client_id = 'XlXxjnv76F'
 connect_db(app)
 
 
-# **user routes signin and signup**
+# *******************************routes for signup, logging in, logging out******************************
 
 
 @app.before_request
@@ -112,9 +112,17 @@ def logout():
     return redirect('/')
 
 
+# *******************************basic user routes, view profile, edit profile****************************
+# **********************************view collection, and delete user*****************************************
+
+
 @app.route('/users/<int:user_id>/profile')
 def show_user_profile(user_id):
     """displays the user profile info"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user = User.query.get_or_404(user_id)
 
@@ -158,7 +166,43 @@ def show_game_collecion(user_id):
     return render_template('/users/collection.html', user=user)
 
 
-@app.route('/users/add_game/<string:api_id>')
+@app.route('/users/<int:user_id>/delete', methods=["GET", "POST"])
+def delete_user(user_id):
+    """Delete user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = g.user
+
+    """removes the games in a users game collection before removing the user, this was necessary do to 
+       the use of composite keys"""
+    games_to_delete = GameCollection.query.filter(
+        GameCollection.user_id == user.id).all()
+    for game in games_to_delete:
+        db.session.delete(game)
+    db.session.commit()
+
+    form = DeleteUserForm(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(form.username.data, form.password.data):
+            do_logout()
+            db.session.delete(user)
+            db.session.commit()
+            flash('Sorry to see you go, rejoin anytime!', 'success')
+        return redirect('/')
+
+    flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger')
+    return render_template('users/delete.html', form=form)
+
+
+# *************************************basic game routes, add game, remove game,*******************************
+# *************************************edit game rating, edit game comments************************************
+
+
+@app.route('/games/add_game/<string:api_id>')
 def add_game(api_id):
     """ adds game to the collective games db and then to the user's game_collection, if game already
     exists in the games db then it just adds it to the users collection"""
@@ -171,58 +215,86 @@ def add_game(api_id):
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
 
-    game = get_or_create_game(api_id,data)
+    added_game = GameCollection(user_id=g.user.id, game_id=api_id, name=data['games'][0]['name'],
+                                thumb_url=data['games'][0]['thumb_url'])
 
-    added_game = GameCollection(user_id=g.user.id, game_id=api_id)
     db.session.add(added_game)
     db.session.commit()
 
-    return render_template('users/collection.html', game=game)
+    return redirect(f'/users/{g.user.id}/game_collection')
 
 
-@app.route('/users/remove_game/<string:game_id>')
+@app.route('/games/remove_game/<string:game_id>')
 def remove_game(game_id):
     """removes a game from a users collection and 
     returns them to the updated collection page"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user_id = g.user.id
     game_to_remove = GameCollection.query.get((user_id, game_id))
     db.session.delete(game_to_remove)
     db.session.commit()
 
-    return render_template('users/collection.html')
+    return redirect(f'/users/{g.user.id}/game_collection')
 
 
-@app.route('users/edit_game/<string:game_id>', methods=['PATCH'])
-def edit_game():
+@app.route('/games/edit_rating/<string:game_id>', methods=['POST'])
+def edit_rating(game_id):
     """edits a users game info for games in their game collection"""
-    return redirect('/')
-
-
-@app.route('/users/<int:user_id>/delete', methods=["GET", "DELETE"])
-def delete_user(user_id):
-    """Delete user."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = g.user
-    form = DeleteUserForm(obj=user)
+    game = GameCollection.query.get((g.user.id, game_id))
 
-    if form.validate_on_submit():
-        if User.authenticate(user.username.data, form.password.data):
-            do_logout()
-            db.session.delete(user)
-            db.session.commit()
-            flash('Sorry to see you go, rejoin anytime!', 'success')
-        return redirect('/')
-
-    flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger')
-    return render_template('users/delete.html', form=form)
+    game.rating = request.form['rating']
+    db.session.commit()
+    return render_template('users/collection.html')
 
 
-# **home and search routes**
+@app.route('/games/edit_comments/<string:game_id>', methods=['POST'])
+def edit_comments(game_id):
+    """edits a users game info for games in their game collection"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    game = GameCollection.query.get((g.user.id, game_id))
+
+    game.comments = request.form['comment']
+    db.session.commit()
+    return render_template('users/collection.html')
+
+
+@app.route('/games/value_game/<string:game_id>', methods=['GET'])
+def get_value(game_id):
+    """checks the api for recent used sales prices and averages them"""
+
+    resp = requests.get(f'{BASE_URL}/game/prices',
+                        params={'pretty': 'true', 'game_id': game_id, 'client_id': client_id})
+    
+    data = resp.json()
+    prices = []
+    for num in range(len(data['gameWithPrices']['used'])):
+        prices.append(data['gameWithPrices']['used'][num]['price'])
+
+    avg = average(prices)
+    rnd_avg = round(avg,2)
+    
+    game = GameCollection.query.get((g.user.id, game_id))
+    game.used_value = rnd_avg
+    db.session.commit()
+    
+    return redirect(f'/users/{g.user.id}/game_collection')
+
+
+# **********************************home route and search routes****************************************
+
 
 @app.route('/')
 def show_home():
@@ -249,27 +321,11 @@ def show_game(api_id):
     parsing out the html tags from the api data'''
 
     # if g.user:
-    #     ids = [id for game in g.user.games] + [g.user.id]
-    #     games = (GameCollection
-    #                 .query
-    #                 .filter(.user_id.in_(ids))
-    #                 .order_by(Message.timestamp.desc())
-    #                 .limit(100)
-    #                 .all())
-
-
-    #     likes = [like.id for like in g.user.likes]
-
-    #     return render_template('home.html', messages=messages, likes=likes)
-
-    # else:
-    #     return render_template('home-anon.html')
+    #     ids = [g.user.games.game_id for game in g.user.games]
 
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
-
-    soup = remove_tags(data['games'][0]['description'])
 
     resp2 = requests.get(f'{BASE_URL}/game/images',
                          params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
@@ -281,5 +337,8 @@ def show_game(api_id):
 
     videos = resp3.json()
 
-    return render_template('games/details.html', data=data, soup=soup,
+    return render_template('games/details.html', data=data,
                            images=images, videos=videos)
+
+
+

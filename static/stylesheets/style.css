@@ -142,3 +142,10 @@ ul i{
     border-radius: 50%;
 
 }
+
+#cash{
+    color:gold;
+    text-shadow: 1px 1px .5px black;
+    font-size: larger;
+
+}
