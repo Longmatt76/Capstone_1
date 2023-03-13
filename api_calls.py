@@ -16,17 +16,17 @@ client_id = 'XlXxjnv76F'
 skip = 0
 games = []
 
-while True:
-    print('-----')
-    url =       f'{BASE_URL}/search?skip={skip}&limit=30&name=Catan&pretty=true&client_id={client_id}'
-    print('Requesting', url)
-    res = requests.get(url)
-    data = res.json()
-    if data['games']== 0:
-        break
+# while True:
+#     print('-----')
+#     url =       f'{BASE_URL}/search?skip={skip}&limit=30&name=Catan&pretty=true&client_id={client_id}'
+#     print('Requesting', url)
+#     res = requests.get(url)
+#     data = res.json()
+#     if data['games']== 0:
+#         break
    
-    games.extend(data['games'])
-    skip = skip + 30
+#     games.extend(data['games'])
+#     skip = skip + 30
 
     
 
