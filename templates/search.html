@@ -20,8 +20,10 @@
     </div>
   </div></div>
 
-
 {% endfor %}
 </div>
+{% if data['games'] | length == 30 %}
+ <a href="/search" id="nextpage"><div class="container text-center my-4 sitefont"><i class="fa-solid fa-angles-right"> Next Page &nbsp;</i><i class="fa-solid fa-angles-right"></i></div></a> 
+{% endif %}
 </div>
 {% endblock %}

@@ -9,7 +9,8 @@ from playlog_models import Playlog, Player, Playthrough
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
 import requests
 from flask_sqlalchemy import Pagination
-from functions import average
+from functions import average, get_categories, get_mechanics
+
 
 CURR_USER_KEY = "curr_user"
 
@@ -29,6 +30,8 @@ client_id = 'XlXxjnv76F'
 
 connect_db(app)
 
+# get_mechanics()
+# get_categories()
 
 # *******************************routes for signup, logging in, logging out******************************
 
@@ -303,12 +306,11 @@ def show_home():
 
 
 @app.route('/search')
-def show_search():
+def show_search(start=0,per_page=30):
     '''queries the API with the search request and displays the results'''
-
     query = request.args['search']
     resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': 'true', 'limit': 30, 'client_id': client_id, 'name': query})
+                        params={'fuzzy_match': 'true', 'limit': per_page, 'offset': start, 'client_id': client_id, 'name': query})
     data = resp.json()
 
     return render_template('search.html', data=data, query=query)

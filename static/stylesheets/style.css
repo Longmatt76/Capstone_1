@@ -149,3 +149,14 @@ ul i{
     font-size: larger;
 
 }
+
+#nextpage{
+    font-size: larger;
+    color: rgb(55, 55, 56);
+    
+}
+
+#nextpage:hover{
+    color: #17a2b8;
+    text-shadow: 2px 2px 1px black;
+}

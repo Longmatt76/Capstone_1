@@ -19,18 +19,18 @@ from user_models import db
 #         return f"<Game #{self.id}: {self.api_handle}, {self.name}>"
 
 
-# class Mechanic(db.Model):
-#     """stores the api data for a games mechanics"""
+class Mechanic(db.Model):
+    """stores the api data for a games mechanics"""
 
-#     __tablename__ = "mechanics"
+    __tablename__ = "mechanics"
 
-#     id = db.Column(db.TEXT,
-#                    primary_key=True)
+    id = db.Column(db.TEXT,
+                   primary_key=True)
 
-#     name = db.Column(db.Text,
-#                      nullable=False)
+    name = db.Column(db.Text,
+                     nullable=False)
 
-#     url = db.Column(db.Text)
+    
 
 
 # class GameMechanic(db.Model):
@@ -48,18 +48,18 @@ from user_models import db
 #                     db.ForeignKey('mechanics.id'))
 
 
-# class Category(db.Model):
-#     """stores the api data for a games categories"""
+class Category(db.Model):
+    """stores the api data for a games categories"""
 
-#     __tablename__ = "categories"
+    __tablename__ = "categories"
 
-#     id = db.Column(db.Text,
-#                    primary_key=True)
+    id = db.Column(db.Text,
+                   primary_key=True)
 
-#     name = db.Column(db.Text,
-#                      nullable=False)
+    name = db.Column(db.Text,
+                     nullable=False)
 
-#     url = db.Column(db.Text)
+  
 
 
 

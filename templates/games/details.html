@@ -33,7 +33,7 @@
           </div>
           <p class=" text-white text-left">Designer: <span class="text-light">{% if data['games'][0]['primary_designer']%} 
             {{data['games'][0]['primary_designer']['name']}} {% endif %}</span></p>
-          <p class=" text-white text-left">Publisher: <span class="text-light"> {{data['games'][0]['primary_publisher']['name']}}</span></p>
+          <p class=" text-white text-left">Publisher: <span class="text-light">{% if data['games'][0]['primary_publisher'] %} {{data['games'][0]['primary_publisher']['name']}} {% endif %}</span></p>
           
           <a href="/games/add_game/{{data['games'][0]['id']}}" class="si"><i class="fa-regular fa-flag mt-3"></i> <span class=""> &nbsp; Add to collection  &nbsp;|&nbsp;</span></a>
           <a href="" class="si"><i class="fa-regular fa-heart"></i><span > &nbsp; Add to wishlist  &nbsp;| &nbsp;</span></a> 
@@ -57,7 +57,7 @@
 </div>
 </div>
 <div class="container bg-dark rounded p-3" id="gamedeets">
-  <h3 id="gametitle" class="sitefont font-weight-bold text-white">Videos:&nbsp;<span class="text-info">{{videos['videos'][0]['id'] | length}}</h3></span> <hr id="line">
+  <h3 id="gametitle" class="sitefont font-weight-bold text-white">Videos:&nbsp;<span class="text-info"></h3></span> <hr id="line">
 <div class="scrolling-wrapper">
   {% for video in videos['videos']%}
  <a href="{{video['url']}}"><img class="border border-dark" src="{{video['image_url']}}" alt=""></a> 
@@ -68,42 +68,42 @@
 <table class="table table-striped table-dark">
   <thead>
     <tr>
-      <th scope="col">GAME DETAILS</th>
+      <th scope="col" class="text-info">GAME DETAILS</th>
       
     </tr>
   </thead>
   <tbody>
     <tr>
       <th scope="row">Year Published</th>
-      <td class="text-info">{{data['games'][0]['year_published']}}</td>
+      <td class="text-light">{{data['games'][0]['year_published']}}</td>
     </tr>
     <tr>
       <th scope="row">Number of Players</th>
-      <td class="text-info">{{data['games'][0]['players']}}</td> 
+      <td class="text-light">{{data['games'][0]['players']}}</td> 
     </tr>
     <tr>
       <th scope="row">Playtime</th>
-      <td class="text-info">{{data['games'][0]['playtime']}}</td>
+      <td class="text-light">{{data['games'][0]['playtime']}}</td>
     </tr>
     <tr>
       <th scope="row">Minimum Age</th>
-      <td class="text-info">{{data['games'][0]['min_age']}}</td>
+      <td class="text-light">{{data['games'][0]['min_age']}}</td>
     </tr>
     <tr>
       <th scope="row">Mechanics</th>
-      <td class="text-info">{{data['games'][0]['mechanics']['url']}}</td>
+      <td class="text-light"></td>
     </tr>
     <tr>
       <th scope="row">Categories</th>
-      <td class="text-info">{{data['games'][0]['categories']['url']}}</td>
+      <td class="text-light"></td>
     </tr>
     <tr>
       <th scope="row">Official Site</th>
-      <td><a class="text-info" href="{{data['games'][0]['official_url']}}">{{data['games'][0]['official_url']}}</a> </td>
+      <td><a class="si" href="{{data['games'][0]['official_url']}}">{{data['games'][0]['official_url']}}</a> </td>
     </tr>
     <tr>
       <th scope="row">Rules</th>
-    <td><a class="text-info" href="{{data['games'][0]['rules_url']}}">{{data['games'][0]['rules_url']}}</a></td>
+    <td><a class="si" href="{{data['games'][0]['rules_url']}}">{{data['games'][0]['rules_url']}}</a></td>
     </tr>
   </tbody>
 </table>

@@ -1,4 +1,6 @@
 import requests
+from game_models import Mechanic
+from user_models import db
 
 BASE_URL = 'https://api.boardgameatlas.com/api'
 client_id = 'XlXxjnv76F'
@@ -13,8 +15,8 @@ client_id = 'XlXxjnv76F'
 #     for num in range(len(data['games'])):
 #         print(data['games'][num]['thumb_url'])
 
-skip = 0
-games = []
+# skip = 0
+# games = []
 
 # while True:
 #     print('-----')
@@ -45,3 +47,14 @@ games = []
 
 # for property in data['games']:
 #     print(property)
+
+def get_mechanics():
+    resp = requests.get(f'{BASE_URL}/game/mechanics',
+                    params={'client_id': client_id})
+    mechs = resp.json()
+    for num in range(len(mechs['mechanics'])):
+        num = Mechanic(id=mechs['mechanics'][num]['id'],name=mechs['mechanics'][num]['name'])
+        db.session.add(num)
+
+    db.session.commit()
+    return
