@@ -23,7 +23,7 @@
 {% endfor %}
 </div>
 {% if data['games'] | length == 30 %}
- <a href="/search" id="nextpage"><div class="container text-center my-4 sitefont"><i class="fa-solid fa-angles-right"> Next Page &nbsp;</i><i class="fa-solid fa-angles-right"></i></div></a> 
+ <a href="/search?search={{query}}&start={{parsed}}" id="nextpage"><div class="container text-center my-4 sitefont"><i class="fa-solid fa-angles-right"> Next Page &nbsp;</i><i class="fa-solid fa-angles-right"></i></div></a> 
 {% endif %}
 </div>
 {% endblock %}

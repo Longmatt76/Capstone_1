@@ -12,7 +12,7 @@
            <a href="/users/{{user.id}}/game_collection"><p class="profile">{{user.games | length}}</p></a> 
         </div>
         <div class="col-2 ml-1 mt-5 text-secondary ">Wishlist
-            <p class="profile">{{user.wishes | length}}</p>
+          <a href="/users/{{user.id}}/wishlist"> <p class="profile">{{user.wishes | length}}</p></a> 
         </div>
         <div class="col-2  ml-1 mt-5 text-secondary">Playlogs
             <p class="profile">{{user.playlogs | length}}</p>

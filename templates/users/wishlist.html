@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container"><form action="/search">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <button class="btn border border-dark btn-info sitefont" type="submit" id="button-addon1">Search</button>
+    </div>
+    <input type="text" name="search" class="form-control form-control-lg border border-dark sitefont" placeholder=" Search Board Games">
+  </div></form></div> 
+ 
+<div class="container my-5 sitefont">
+    <div class="row">
+        <div class="col-4 border border-dark bg-dark p-3 rounded"> <div class="card bg-light" >
+            <img class="card-img-top border border-dark" src="{{g.user.header_image_url}}" width="250" height="100px">
+            <div class="card-body">
+              <div class="row">
+             <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h4 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h4></a> </div> 
+             <p class="lead text-info">Collection Value: </p></div> <hr class="bg-dark">
+              <div class="row text-center p-0">
+              <div class="col-4 p-0">Games
+                <p class="text-info">{{g.user.games | length }}</p>
+            </div>
+            <div class="col-4 p-0">Wishes
+                <p class="text-info">{{g.user.wishes | length }}</p>
+            </div>
+            <div class="col-4 p-0">Playlogs
+                <p class="text-info">{{g.user.playlogs | length }}</p>
+            </div>
+            </div>
+          </div>
+          </div> </div>
+        <div class="col-8 bg-dark rounded"> 
+          <table class="table table-dark table-striped">
+            <thead class="thead-dark border border-dark">
+                <h3 class="text-center text-info banner mt-3 p-2 rounded bg-secondary" id="query">{{g.user.username}}'s wishlist</h3>
+              <tr>
+                
+                <th scope="col" class=""></th>
+                <th scope="col" class="">Name</th>
+                <th scope="col" class="" data-toggle="tooltip" data-placement="top"
+                    title="Subscribe or unsubscribe to price alerts and set a price target">Subscribed to price alerts?</th>
+                
+                <th scope="col" class="" data-toggle="tooltip" data-placement="top" 
+                title="When the price hit's your target price you'll recieve an email alert!">Price target</th>
+                <th scope="col" class=""></th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {% for game in g.user.wishes %}
+              <tr>       
+
+              <div class="modal" tabindex="-1" id="A{{game.game_id}}" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-light">
+                      <h5 class="modal-title font-weight-bold">Price alert subcription status: {{game.name}}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="/wishlist/edit/{{game.game_id}}" method="POST">
+                      {{ form.hidden_tag() }}
+                      <label class="text-info font-weight-bold" for="subscribe">Submit a checked box to subscribe or unchecked box to unsubscribe:</label>
+                      {{form.subscribe_price_alerts (class = 'form-control', id='subscribe')}}
+                      <hr>
+                      <label class="text-info font-weight-bold" for="inlineFormInputGroup">Price alert target:</label>
+                      <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">$</div>
+                        </div>
+                        {{form.price_alert_trigger (class= "form-control", id="inlineFormInputGroup", placeholder="please enter dollar amount" )}}
+                      </div>
+                      <button type="submit" class="btn btn-info block mt-3">Save changes</button>
+                    
+                    </form>
+                     
+                    </div>
+                    <div class="modal-footer bg-light">
+                      <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              
+              <td class="border border-secondary"><a href="/search/{{game.game_id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
+              <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a> </td>
+              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#A{{game.game_id}}">{% if game.subscribe_price_alerts %}subscribed{% else %}not subscribed{% endif %}</a></td>
+              <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#A{{game.game_id}}">{% if game.price_alert_trigger %}$&nbsp;{{game.price_alert_trigger}}{% else %}N/A{% endif %}</a> </td>
+              <td class="border border-secondary"><a class="si" href="/wishlist/remove_game/{{game.game_id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
+
+            </tr>{% endfor %}
+          </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

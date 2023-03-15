@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, InputRequired
 
 
@@ -37,3 +37,6 @@ class DeleteUserForm(FlaskForm):
     password = PasswordField('Password', validators=[Length(min=6)])
 
 
+class EditWishForm(FlaskForm):
+    subscribe_price_alerts = BooleanField('Submit checked box to subscribe or unchecked box to unsubscribe:')
+    price_alert_trigger = IntegerField("Set price target in dollar amount:")

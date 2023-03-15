@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from user_models import db, connect_db, User
 from game_models import GameCollection, Wishlist
 from playlog_models import Playlog, Player, Playthrough
-from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm
+from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm
 import requests
 from flask_sqlalchemy import Pagination
 from functions import average, get_categories, get_mechanics
@@ -169,6 +169,19 @@ def show_game_collecion(user_id):
     return render_template('/users/collection.html', user=user)
 
 
+@app.route('/users/<int:user_id>/wishlist')
+def show_wishlist(user_id):
+    """show a users wishlist"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = EditWishForm(obj=g.user)
+    user = User.query.get_or_404(user_id)
+
+    return render_template('/users/wishlist.html', user=user, form=form)
+
+
 @app.route('/users/<int:user_id>/delete', methods=["GET", "POST"])
 def delete_user(user_id):
     """Delete user."""
@@ -179,7 +192,7 @@ def delete_user(user_id):
 
     user = g.user
 
-    """removes the games in a users game collection before removing the user, this was necessary do to 
+    """removes the games in a users game collection before removing the user, this was necessary due to 
        the use of composite keys"""
     games_to_delete = GameCollection.query.filter(
         GameCollection.user_id == user.id).all()
@@ -201,14 +214,13 @@ def delete_user(user_id):
     return render_template('users/delete.html', form=form)
 
 
-# *************************************basic game routes, add game, remove game,*******************************
-# *************************************edit game rating, edit game comments************************************
+# *************************************basic gamecollection routes, add, remove,*******************************
+# *************************************edit game rating and comments in collecion,************************************
 
 
-@app.route('/games/add_game/<string:api_id>')
+@app.route('/gamecollection/add_game/<string:api_id>')
 def add_game(api_id):
-    """ adds game to the collective games db and then to the user's game_collection, if game already
-    exists in the games db then it just adds it to the users collection"""
+    """ adds game to the users collection"""
 
     if not g.user:
         flash("You must be logged in to add a game to your collection, please login or signup", "info")
@@ -227,7 +239,7 @@ def add_game(api_id):
     return redirect(f'/users/{g.user.id}/game_collection')
 
 
-@app.route('/games/remove_game/<string:game_id>')
+@app.route('/gamecollection/remove_game/<string:game_id>')
 def remove_game(game_id):
     """removes a game from a users collection and 
     returns them to the updated collection page"""
@@ -244,7 +256,7 @@ def remove_game(game_id):
     return redirect(f'/users/{g.user.id}/game_collection')
 
 
-@app.route('/games/edit_rating/<string:game_id>', methods=['POST'])
+@app.route('/gamecollection/edit_rating/<string:game_id>', methods=['POST'])
 def edit_rating(game_id):
     """edits a users game info for games in their game collection"""
 
@@ -259,7 +271,7 @@ def edit_rating(game_id):
     return render_template('users/collection.html')
 
 
-@app.route('/games/edit_comments/<string:game_id>', methods=['POST'])
+@app.route('/gamecollection/edit_comments/<string:game_id>', methods=['POST'])
 def edit_comments(game_id):
     """edits a users game info for games in their game collection"""
 
@@ -274,7 +286,7 @@ def edit_comments(game_id):
     return render_template('users/collection.html')
 
 
-@app.route('/games/value_game/<string:game_id>', methods=['GET'])
+@app.route('/gamecollection/value_game/<string:game_id>', methods=['GET'])
 def get_value(game_id):
     """checks the api for recent used sales prices and averages them"""
 
@@ -296,6 +308,85 @@ def get_value(game_id):
     return redirect(f'/users/{g.user.id}/game_collection')
 
 
+
+# ***********************************basic routes for wishlists, add, remove,********************************************
+# **********************************subcribe to price alerts, set target price*******************************************
+
+
+
+@app.route('/wishlist/add_game/<string:api_id>')
+def add_wish(api_id):
+    """ adds game to the users wishlist"""
+
+    if not g.user:
+        flash("You must be logged in to add a game to your collection, please login or signup", "info")
+        return redirect("/login")
+
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'client_id': client_id, 'ids': api_id})
+    data = resp.json()
+
+    added_game = Wishlist(user_id=g.user.id, game_id=api_id, name=data['games'][0]['name'],
+                                thumb_url=data['games'][0]['thumb_url'])
+
+    db.session.add(added_game)
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/wishlist')
+
+
+@app.route('/wishlist/remove_game/<string:game_id>')
+def remove_wish(game_id):
+    """removes a game from a users wishlist and 
+       returns them to the updated wishlist page"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user_id = g.user.id
+    game_to_remove = Wishlist.query.get((user_id, game_id))
+    db.session.delete(game_to_remove)
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/wishlist')
+
+
+@app.route('/wishlist/edit/<string:game_id>', methods=['POST'])
+def edit_wish(game_id):
+    """edits a users game info for games in their game collection"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+     
+    wish = Wishlist.query.get((g.user.id, game_id))
+    form = EditWishForm()
+    
+    if form.validate_on_submit:
+            wish.subscribe_price_alerts =  form.subscribe_price_alerts.data
+            wish.price_alert_trigger = form.price_alert_trigger.data
+            db.session.commit()
+            return render_template('users/wishlist.html', form=form)
+    
+    return render_template('users/wishlist.html', form=form)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # **********************************home route and search routes****************************************
 
 
@@ -306,14 +397,17 @@ def show_home():
 
 
 @app.route('/search')
-def show_search(start=0,per_page=30):
-    '''queries the API with the search request and displays the results'''
+def show_search():
+    '''queries the API with the search request and displays the results, 30 per page'''
     query = request.args['search']
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': 'true', 'limit': per_page, 'offset': start, 'client_id': client_id, 'name': query})
-    data = resp.json()
+    start = request.args.get('start', 0)
+    parsed = int(start)
 
-    return render_template('search.html', data=data, query=query)
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'fuzzy_match': 'true', 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
+    data = resp.json()
+    parsed += 30
+    return render_template('search.html', data=data, query=query, parsed=parsed)
 
 
 @app.route('/search/<string:api_id>/game_details')
