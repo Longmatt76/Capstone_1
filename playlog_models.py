@@ -12,55 +12,41 @@ class Playlog(db.Model):
 
     id = db.Column(db.Integer,
                    primary_key=True,
-                   autoincrement=True,)
-
+                   unique=True,)
+    
+   
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id'),
                         nullable=False,)
-
-    game_id = db.Column(db.Text,
-                        nullable=False,)
     
-    name = db.Column(db.Text,
-                     nullable=False,)
-
-    thumb_url = db.Column(db.Text)
+    game_id = db.Column(db.Text, 
+                        primary_key=True)
 
     date_of_playthrough = db.Column(db.Date)
 
     player_count = db.Column(db.Integer,
                              nullable=False)
+    
+    location = db.Column(db.Text)
 
-    notes = db.Column(db.Text)
+    notes = db.Column(db.String(140))
+
 
 
 class Player(db.Model):
-    '''store's the player info for playlogs'''
+    '''stores the info for the various players in the playlogs including their results'''
 
     __tablename__ = "players"
-
-    id = db.Column(db.Integer,
-                   primary_key= True,
-                   autoincrement= True,)
     
-    player_name = db.Column(db.Text)
-
-    playthroughs = db.relationship('Playthrough',
-                                   backref='players')
-
-
-class Playthrough(db.Model):
-    '''many to many relationship between players and playlogs'''
-
-    __tablename__ = "playthroughs"
-
+    player_id = db.Column(db.Integer,
+                          primary_key= True)
+    
     playlog_id = db.Column(db.Integer,
                            db.ForeignKey('playlogs.id'),
                            primary_key= True)
-    
-    player_id = db.Column(db.Integer,
-                          db.ForeignKey('players.id'),
-                          primary_key= True)
-    
+
+    player_name = db.Column(db.Text)
+
+
     player_score = db.Column(db.Integer,
                              default= 0)

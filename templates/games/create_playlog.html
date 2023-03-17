@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}add playlog{% endblock%}
+{% block content %}
+
+<div class="container sitefont my-3">
+    <h2 class="text-center text-info mt-3 display-4" id="query">Log Play</h2> <hr>
+<p class="lead text-center font-italic">Record a playlog for any game!</p>
+    <div class="card border border-dark">
+        <div class="card-header border text-white bg-dark">
+          Add Playlog: <h3><span class="text-info font-weight-bold" id="logo_title">{{data['games'][0]['name']}}</span> </h3> 
+        </div>
+        <div class="card-body" id="cbod">
+         <form action="">
+        {{form.player_count.label (class='font-weight-bold')}}{{form.player_count (class='form-control border border-dark', id="player_count",)}}
+<table id="formtable" class="table table-dark rounded">
+    <thead >
+        <th scope="col">Player #</th>
+        <th scope="col">Name</th>
+        <th scope="col">Score</th>
+    </thead>
+<tbody id="tbod">
+<tr class="border">
+    <th scope="row" class="col-2">1</th>
+    <td class="border" class="col-6"><input type="text" class="form-control"></td>
+    <td class="border" class="col-4"><input type="text" class="form-control"></td>
+</tr>
+
+</tbody>
+</table>
+{{form.date_of_playthrough.label (class='font-weight-bold')}}{{form.date_of_playthrough (class='form-control border border-dark', type='date')}}
+{{form.location.label (class='font-weight-bold')}}{{form.location (class='form-control border border-dark')}}
+{{form.notes.label (class='font-weight-bold')}}{{form.notes (type='text_area', class='form-control border border-dark')}}
+         </form>
+          <a href="#" class="btn btn-info btn-lg my-3 border border-dark">Save Playlog</a>
+        </div>
+      </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SelectField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SelectField, BooleanField, IntegerField, DateField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length, InputRequired
 
 
@@ -38,5 +38,14 @@ class DeleteUserForm(FlaskForm):
 
 
 class EditWishForm(FlaskForm):
+    """form for editing wishlish data"""
     subscribe_price_alerts = BooleanField('Submit checked box to subscribe or unchecked box to unsubscribe:')
     price_alert_trigger = IntegerField("Set price target in dollar amount:")
+
+
+class AddPlaylogForm(FlaskForm):
+    """form to add playlogs"""
+    player_count = SelectField('Number of Players:', choices=[(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)])
+    date_of_playthrough= DateField("Date Played:")
+    location = StringField('Location:')
+    notes = TextAreaField('Notes:', validators=[Length(max=140)])

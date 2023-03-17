@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from user_models import db, connect_db, User
 from game_models import GameCollection, Wishlist
-from playlog_models import Playlog, Player, Playthrough
-from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm
+from playlog_models import Playlog, Player
+from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm, AddPlaylogForm
 import requests
 from flask_sqlalchemy import Pagination
 from functions import average, get_categories, get_mechanics
@@ -319,7 +319,7 @@ def add_wish(api_id):
     """ adds game to the users wishlist"""
 
     if not g.user:
-        flash("You must be logged in to add a game to your collection, please login or signup", "info")
+        flash("You must be logged in to add a game to your wishlist, please login or signup", "info")
         return redirect("/login")
 
     resp = requests.get(f'{BASE_URL}/search',
@@ -370,19 +370,6 @@ def edit_wish(game_id):
             return render_template('users/wishlist.html', form=form)
     
     return render_template('users/wishlist.html', form=form)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -438,3 +425,22 @@ def show_game(api_id):
 
 
 
+# **************************************playlog routes, add, remove, edit***********************************************
+
+
+
+@app.route('/playlogs/add_log/<string:api_id>', methods=['GET', 'POST'])
+def add_playlog(api_id):
+    """records a playlog for a game in the users collecion"""
+    if not g.user:
+        flash("You must be logged in to record a playlog, please login or signup", "info")
+        return redirect("/login")
+    
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'client_id': client_id, 'ids': api_id})
+    data = resp.json()
+
+    form = AddPlaylogForm()
+
+   
+    return render_template('games/create_playlog.html', form=form, data=data)

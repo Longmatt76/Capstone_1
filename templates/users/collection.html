@@ -111,7 +111,7 @@
               
               
               <td class="border border-secondary"><a href="/search/{{game.game_id}}/game_details"><img src="{{game.thumb_url}}" height="70px" width="60px"></a> </td>
-              <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a> </td>
+              <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a><hr> <a class="si font-italic" href="/playlogs/add_log/{{game.game_id}}">add playlog</a> </td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#B{{game.game_id}}">{{game.rating}}</a></td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#A{{game.game_id}}">{{game.comments}}</a> </td>
               <td class="border border-secondary"><a class="si" href="/gamecollection/value_game/{{game.game_id}}">{% if game.used_value != 'get value' %} ${% endif %} {{game.used_value}}</a></td>
