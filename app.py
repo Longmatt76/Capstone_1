@@ -190,9 +190,9 @@ def show_playlogs(user_id):
         return redirect("/")
     
     user = User.query.get_or_404(user_id)
-    plays = PlaySession.query.filter()
+    players = PlaySession.query.filter(PlaySession.playlog_id == Playlog.id).all()
     
-    return render_template('/users/playlogs.html', user=user)
+    return render_template('/users/playlogs.html', user=user, players=players)
 
 @app.route('/users/<int:user_id>/delete', methods=["GET", "POST"])
 def delete_user(user_id):
@@ -465,8 +465,7 @@ def add_playlog(game):
         '''player one is hard coded in the form table the rest are dynamically generated'''
         player_one_name = request.form['name1']
         player_one_score = request.form['score1']
-        player_one_id = 1
-        playsession = PlaySession(player_id=player_one_id,playlog_id=playlog.id,
+        playsession = PlaySession(player_id=1,playlog_id=playlog.id,
                                   player_name=player_one_name,player_score=player_one_score)
         db.session.add(playsession)
         db.session.commit()

@@ -1,20 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
 {% for playlog in g.user.playlogs %}
-<div class="container">
+<div class="container my-4">
 <div class="card text-center sitefont">
-  <div class="card-header">
-     <h4 class="text-info font-weight-bold">Playlog:{{playlog.id}}</h4>
+  <div class="card-header bg-dark p-3">
+     <h4 class=" font-weight-bold text-white">Game: <span id="query">{{playlog.game}}</span></h4>
   </div>
-  <div class="card-body">
-    <h5 class="card-title">Game: <span class="text-info">{{playlog.game}}</span></h5>
-   {% for player in g.user.playlogs.players %}
-   {{player}}
-   {% endfor %}
+  <div class="card-body bg-light">
+    <h5 class="card-title font-weight-bold"> Date of play session:&nbsp;<span id="query">{{playlog.date_of_playthrough}}</span>
+      &nbsp; &nbsp; Location: <span class="font-weight-normal">&nbsp;{{playlog.location}}</span> </h5>
+    <table class="table table-striped rounded bg-white">
+      <thead >
+         <th scope="col">Player #</th>
+         <th scope="col">Name</th>
+         <th scope="col">Score</th>
+     </thead>
+     <tbody>
+ {% for player in players if player.playlog_id == playlog.id %}
+     <tr>
+      <th scope="row">{{player.player_id}}</th>
+      <td>{{player.player_name}}</td>
+      <td>{{player.player_score}}</td>
+     </tr>
+ {% endfor %}
+</tbody>
+</table>
+<h5 class=""></h5> 
+<p class="lead font-weight-bold text-left mx-3">Notes:&nbsp; <span class="font-weight-normal">{{playlog.notes}}</span> </p>
 
   </div>
-  <div class="card-footer text-muted">
-     Date of play session: {{playlog.date_of_playthrough}}  <a href="#" class="btn btn-danger btn-sm mx-5">Delete log</a>
+  <div class="card-footer text-muted bg-dark">
+     <a href="#" class="btn btn-danger btn-sm mx-5">Delete log</a>
   </div>
 </div>
 </div>
