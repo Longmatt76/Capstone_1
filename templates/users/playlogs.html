@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for playlog in g.user.playlogs %}
+<div class="container">
+<div class="card text-center sitefont">
+  <div class="card-header">
+     <h4 class="text-info font-weight-bold">Playlog:{{playlog.id}}</h4>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Game: <span class="text-info">{{playlog.game}}</span></h5>
+   {% for player in g.user.playlogs.players %}
+   {{player}}
+   {% endfor %}
+
+  </div>
+  <div class="card-footer text-muted">
+     Date of play session: {{playlog.date_of_playthrough}}  <a href="#" class="btn btn-danger btn-sm mx-5">Delete log</a>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from user_models import db, connect_db, User
 from game_models import GameCollection, Wishlist
-from playlog_models import Playlog, Player
+from playlog_models import Playlog, PlaySession
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm, AddPlaylogForm
 import requests
 from flask_sqlalchemy import Pagination
@@ -181,6 +181,18 @@ def show_wishlist(user_id):
 
     return render_template('/users/wishlist.html', user=user, form=form)
 
+
+@app.route('/users/<int:user_id>/playlogs')
+def show_playlogs(user_id):
+    """show a user's playlogs"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = User.query.get_or_404(user_id)
+    plays = PlaySession.query.filter()
+    
+    return render_template('/users/playlogs.html', user=user)
 
 @app.route('/users/<int:user_id>/delete', methods=["GET", "POST"])
 def delete_user(user_id):
@@ -429,18 +441,49 @@ def show_game(api_id):
 
 
 
-@app.route('/playlogs/add_log/<string:api_id>', methods=['GET', 'POST'])
-def add_playlog(api_id):
+@app.route('/playlogs/add_log/<string:game>', methods=['GET', 'POST'])
+def add_playlog(game):
     """records a playlog for a game in the users collecion"""
     if not g.user:
         flash("You must be logged in to record a playlog, please login or signup", "info")
         return redirect("/login")
     
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'client_id': client_id, 'ids': api_id})
-    data = resp.json()
-
     form = AddPlaylogForm()
+    
+    if form.validate_on_submit():
+        player_count = form.player_count.data
+        date_of_playthrough = form.date_of_playthrough.data
+        location = form.location.data
+        notes = form.notes.data
 
-   
-    return render_template('games/create_playlog.html', form=form, data=data)
+        playlog = Playlog(user_id=g.user.id,game=game,player_count=player_count,
+                      date_of_playthrough=date_of_playthrough,location=location,notes=notes)
+    
+        db.session.add(playlog)
+        db.session.commit()
+        
+        '''player one is hard coded in the form table the rest are dynamically generated'''
+        player_one_name = request.form['name1']
+        player_one_score = request.form['score1']
+        player_one_id = 1
+        playsession = PlaySession(player_id=player_one_id,playlog_id=playlog.id,
+                                  player_name=player_one_name,player_score=player_one_score)
+        db.session.add(playsession)
+        db.session.commit()
+
+        x = range(playlog.player_count - 1) 
+        for n in x: 
+            player_id = n + 2
+            player_name = request.form[f'row{n + 2}input1']
+            player_score = request.form[f'row{n + 2}input2']
+            playsession = PlaySession(player_id=player_id,playlog_id=playlog.id,
+                                      player_name=player_name,player_score=player_score)
+            db.session.add(playsession)
+            db.session.commit()
+
+
+        return redirect(f'/users/{g.user.id}/game_collection')
+
+
+    print(form.errors)
+    return render_template('games/create_playlog.html', form=form, game=game)

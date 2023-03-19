@@ -45,7 +45,7 @@ class EditWishForm(FlaskForm):
 
 class AddPlaylogForm(FlaskForm):
     """form to add playlogs"""
-    player_count = SelectField('Number of Players:', choices=[(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)])
+    player_count = SelectField('Number of Players:', coerce=int, choices=[(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)])
     date_of_playthrough= DateField("Date Played:")
     location = StringField('Location:')
     notes = TextAreaField('Notes:', validators=[Length(max=140)])

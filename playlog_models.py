@@ -12,15 +12,15 @@ class Playlog(db.Model):
 
     id = db.Column(db.Integer,
                    primary_key=True,
-                   unique=True,)
-    
+                   unique=True,
+                   autoincrement=True)
+ 
    
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id'),
                         nullable=False,)
-    
-    game_id = db.Column(db.Text, 
-                        primary_key=True)
+
+    game = db.Column(db.Text)
 
     date_of_playthrough = db.Column(db.Date)
 
@@ -31,15 +31,21 @@ class Playlog(db.Model):
 
     notes = db.Column(db.String(140))
 
+    players = db.relationship('PlaySession',
+                              backref = 'playlogs')
+
+    
 
 
-class Player(db.Model):
-    '''stores the info for the various players in the playlogs including their results'''
+class PlaySession(db.Model):
+    '''many to many connection between players and playlogs'''
 
-    __tablename__ = "players"
+    __tablename__ = "play_sessions"
     
     player_id = db.Column(db.Integer,
-                          primary_key= True)
+                          primary_key= True,
+                          autoincrement=True)
+    
     
     playlog_id = db.Column(db.Integer,
                            db.ForeignKey('playlogs.id'),
@@ -47,6 +53,6 @@ class Player(db.Model):
 
     player_name = db.Column(db.Text)
 
-
+    
     player_score = db.Column(db.Integer,
                              default= 0)
