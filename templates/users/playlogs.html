@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+
+{% if g.user.playlogs | length == 0 %}
+<h3 class="text-center display-5 sitefont mt-5">No playlogs currently added, click 'add playlog' on any game's detail page or from within your collection to get started!</h3>
+{% else %}
+<h3 class="text-info text-center mt-3" id="query">{{g.user.username}}'s playlogs</h3>
+{% endif %}
+
 {% for playlog in g.user.playlogs %}
+
 <div class="container my-4">
 <div class="card text-center sitefont">
   <div class="card-header bg-dark p-3">
@@ -30,7 +38,9 @@
 
   </div>
   <div class="card-footer text-muted bg-dark">
-     <a href="#" class="btn btn-danger btn-sm mx-5">Delete log</a>
+   <form action="/playlogs/remove_log/{{playlog.id}}" method="POST">
+     <button type="submit" class="btn btn-danger btn-sm mx-5">Delete log</button>
+   </form>
   </div>
 </div>
 </div>

@@ -13,11 +13,11 @@ class Playlog(db.Model):
     id = db.Column(db.Integer,
                    primary_key=True,
                    unique=True,
-                   autoincrement=True)
+                   autoincrement=True,)
  
    
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
+                        db.ForeignKey('users.id', ondelete='CASCADE'),
                         nullable=False,)
 
     game = db.Column(db.Text)
@@ -47,7 +47,7 @@ class PlaySession(db.Model):
     
     
     playlog_id = db.Column(db.Integer,
-                           db.ForeignKey('playlogs.id'),
+                           db.ForeignKey('playlogs.id', ondelete='CASCADE'),
                            primary_key= True)
 
     player_name = db.Column(db.Text)

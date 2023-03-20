@@ -486,3 +486,13 @@ def add_playlog(game):
 
     print(form.errors)
     return render_template('games/create_playlog.html', form=form, game=game)
+
+
+@app.route('/playlogs/remove_log/<int:log_id>', methods=['POST'])
+def delete_playlog(log_id):
+    """deletes a selected playlog from the database"""
+    playlog = Playlog.query.get(log_id)
+    db.session.delete(playlog)
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/playlogs')
