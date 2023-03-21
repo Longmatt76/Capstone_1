@@ -61,8 +61,7 @@ class GameCollection(db.Model):
     rating = db.Column(db.Text, 
                        default= 'add rating')
 
-    used_value = db.Column(db.Text,
-                           default= 'get value')
+    used_value = db.Column(db.Float)
     
     
 

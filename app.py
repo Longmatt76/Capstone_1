@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import func
 from user_models import db, connect_db, User
 from game_models import GameCollection, Wishlist
 from playlog_models import Playlog, PlaySession
@@ -99,7 +100,7 @@ def login():
 
         if user:
             do_login(user)
-            flash(f'Welcome back {user.username}', 'info')
+            flash(f'Welcome back {user.username}', 'info text-center')
             return redirect('/')
 
     return render_template('users/login.html', form=form)
@@ -163,10 +164,15 @@ def show_game_collecion(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
+    
+    collection_value = db.session.query(func.sum(GameCollection.used_value)).filter(GameCollection.user_id == g.user.id).first()
+    
+    for char in collection_value:
+        value = (char)
+        
     user = User.query.get_or_404(user_id)
 
-    return render_template('/users/collection.html', user=user)
+    return render_template('/users/collection.html', user=user, value=value)
 
 
 @app.route('/users/<int:user_id>/wishlist')
@@ -386,57 +392,6 @@ def edit_wish(game_id):
 
 
 
-# **********************************home route and search routes****************************************
-
-
-@app.route('/')
-def show_home():
-    '''displays the homepage'''
-    return render_template('home.html')
-
-
-@app.route('/search')
-def show_search():
-    '''queries the API with the search request and displays the results, 30 per page'''
-    query = request.args['search']
-    start = request.args.get('start', 0)
-    parsed = int(start)
-
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': 'true', 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
-    data = resp.json()
-    parsed += 30
-    return render_template('search.html', data=data, query=query, parsed=parsed)
-
-
-@app.route('/search/<string:api_id>/game_details')
-def show_game(api_id):
-    '''Using the api's id for the clicked on game it queries the API three times
-    (for game details,images, and videos) then displays that games details page 
-    parsing out the html tags from the api data'''
-
-    # if g.user:
-    #     ids = [g.user.games.game_id for game in g.user.games]
-
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'client_id': client_id, 'ids': api_id})
-    data = resp.json()
-
-    resp2 = requests.get(f'{BASE_URL}/game/images',
-                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
-
-    images = resp2.json()
-
-    resp3 = requests.get(f'{BASE_URL}/game/videos',
-                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
-
-    videos = resp3.json()
-
-    return render_template('games/details.html', data=data,
-                           images=images, videos=videos)
-
-
-
 # **************************************playlog routes, add, remove, edit***********************************************
 
 
@@ -496,3 +451,61 @@ def delete_playlog(log_id):
     db.session.commit()
 
     return redirect(f'/users/{g.user.id}/playlogs')
+
+
+
+
+# **********************************home route and search routes****************************************
+
+
+@app.route('/')
+def show_home():
+    '''displays the homepage'''
+    return render_template('home.html')
+
+
+@app.route('/search')
+def show_search():
+    '''queries the API with the search request and displays the results, 30 per page'''
+    query = request.args['search']
+    start = request.args.get('start', 0)
+    parsed = int(start)
+
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'fuzzy_match': 'true', 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
+    data = resp.json()
+    parsed += 30
+    return render_template('search.html', data=data, query=query, parsed=parsed)
+
+
+@app.route('/search/<string:api_id>/game_details')
+def show_game(api_id):
+    '''Using the api's id for the clicked on game it queries the API three times
+    (for game details,images, and videos) then displays that games details page 
+    parsing out the html tags from the api data'''
+
+
+    resp = requests.get(f'{BASE_URL}/search',
+                        params={'client_id': client_id, 'ids': api_id})
+    data = resp.json()
+
+    resp2 = requests.get(f'{BASE_URL}/game/images',
+                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
+
+    images = resp2.json()
+
+    resp3 = requests.get(f'{BASE_URL}/game/videos',
+                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
+
+    videos = resp3.json()
+
+    if g.user:
+        collect_ids = [game.game_id for game in g.user.games]
+        wish_ids = [game.game_id for game in g.user.wishes]
+
+        return render_template('games/details.html', data=data,
+                           images=images, videos=videos, collect_ids=collect_ids,wish_ids=wish_ids)
+
+    return render_template('games/details.html', data=data,
+                           images=images, videos=videos)
+

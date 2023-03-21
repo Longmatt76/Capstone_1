@@ -13,8 +13,10 @@
             <img class="card-img-top border border-dark" src="{{g.user.header_image_url}}" width="250" height="100px">
             <div class="card-body">
               <div class="row">
-             <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h4 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h4></a> </div> 
-             <p class="lead text-info">Collection Value: </p></div> <hr class="bg-dark">
+             <div class="col-4"> <img class="border border-dark" src="{{g.user.image_url}}" id="pic" alt=""></div> <div class="col-8"><a class="text-info" href="/users/{{g.user.id}}/profile"><h3 class="card-title text-center mr-2 mt-3" id="query">{{g.user.username}}</h3></a> </div> 
+             <p class="lead text-info ml-1 mt-2" id="query">Collection Value:&nbsp;</p> <br> <p class="lead text-dark font-weight-bold ml-5 mt-2">{% if value %}${{value}}{% else %}$&nbsp;0{% endif %}
+
+             </p></div> <hr class="bg-dark">
               <div class="row text-center p-0">
               <div class="col-4 p-0">Games
                 <p class="text-info">{{g.user.games | length }}</p>
@@ -41,7 +43,7 @@
                 <th scope="col" class="">Comments</th>
                 <th scope="col" class="" data-toggle="tooltip" data-placement="top"
                 title= "By clicking 'get value' we search recent used sales prices of your game 
-                and average them to arrive at an estimated value ">Used Value</th>
+                and average them to arrive at an estimated value which will then magically appear after a few seconds">Used Value</th>
                 <th scope="col" class=""></th>
                 
               </tr>
@@ -114,7 +116,7 @@
               <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a><hr> <a class="si font-italic" href="/playlogs/add_log/{{game.name}}">add playlog</a> </td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#B{{game.game_id}}">{{game.rating}}</a></td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#A{{game.game_id}}">{{game.comments}}</a> </td>
-              <td class="border border-secondary"><a class="si" href="/gamecollection/value_game/{{game.game_id}}">{% if game.used_value != 'get value' %} ${% endif %} {{game.used_value}}</a></td>
+              <td class="border border-secondary"><a class="si" href="/gamecollection/value_game/{{game.game_id}}">{% if game.used_value == None %}get value{% else %}${{game.used_value}}{% endif %}</a></td>
               <td class="border border-secondary"><a class="si" href="/gamecollection/remove_game/{{game.game_id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
 
             </tr>{% endfor %}

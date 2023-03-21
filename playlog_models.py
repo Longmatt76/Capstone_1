@@ -31,6 +31,10 @@ class Playlog(db.Model):
 
     notes = db.Column(db.String(140))
 
+    sessions = db.relationship('PlaySession',
+                              backref= 'playlogs')
+    
+
 
 
     
