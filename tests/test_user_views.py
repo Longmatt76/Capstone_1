@@ -1,14 +1,16 @@
-"""Home and Search View tests."""
+"""User Views tests."""
 
 # run these tests like:
 #
-#    FLASK_ENV=production python -m unittest tests/test_home_search_views.py
+#    FLASK_ENV=production python -m unittest tests/user_views.py
 
 
 import os
 from unittest import TestCase
 
 from user_models import db, connect_db, User
+from game_models import GameCollection,Wishlist
+from playlog_models import Playlog,PlaySession
 
 
 os.environ['DATABASE_URL'] = "postgresql:///boardgames_test"
@@ -25,7 +27,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 
 
-class HomeViewTestCase(TestCase):
+class UserViewTestCase(TestCase):
     """Test views for messages."""
 
     def setUp(self):

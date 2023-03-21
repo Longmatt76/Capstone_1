@@ -49,7 +49,7 @@
           
 
         </div>
-    
+
       </div>
     </div>
     </div>
@@ -100,11 +100,23 @@
     </tr>
     <tr>
       <th scope="row">Mechanics</th>
-      <td class="text-light"></td>
+      <td class="text-light">
+        {% for mechanic in mechanics %}
+        {% for id in mech_ids %}
+        {% if id == mechanic.id %}
+        {{mechanic.name}},&nbsp;
+        {% endif %}{% endfor %}{% endfor %}
+      </td>
     </tr>
     <tr>
       <th scope="row">Categories</th>
-      <td class="text-light"></td>
+      <td class="text-light"> 
+        {% for category in categories %}
+        {% for id in cat_ids %}
+        {% if id == category.id %}
+        {{category.name}},&nbsp;
+        {% endif %}{% endfor %}{% endfor %}
+      </td>
     </tr>
     <tr>
       <th scope="row">Official Site</th>

@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 from user_models import db, connect_db, User
-from game_models import GameCollection, Wishlist
+from game_models import GameCollection, Wishlist, Category, Mechanic
 from playlog_models import Playlog, PlaySession
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm, AddPlaylogForm
 import requests
@@ -168,7 +168,9 @@ def show_game_collecion(user_id):
     collection_value = db.session.query(func.sum(GameCollection.used_value)).filter(GameCollection.user_id == g.user.id).first()
     
     for char in collection_value:
-        value = (char)
+        result = (char)
+
+    value = round(result,2)
         
     user = User.query.get_or_404(user_id)
 
@@ -315,17 +317,19 @@ def get_value(game_id):
     prices = []
     for num in range(len(data['gameWithPrices']['used'])):
         prices.append(data['gameWithPrices']['used'][num]['price'])
+    
+    if prices:
+        avg = average(prices)
+        rnd_avg = round(avg,2)
+    
+        game = GameCollection.query.get((g.user.id, game_id))
+        game.used_value = rnd_avg
+        db.session.commit()
+    
+        return redirect(f'/users/{g.user.id}/game_collection')
 
-    avg = average(prices)
-    rnd_avg = round(avg,2)
-    
-    game = GameCollection.query.get((g.user.id, game_id))
-    game.used_value = rnd_avg
-    db.session.commit()
-    
+    flash("Sorry that game does not currently have a sales history on which to base an estimated value, please try again at a later date", 'info text-center')
     return redirect(f'/users/{g.user.id}/game_collection')
-
-
 
 # ***********************************basic routes for wishlists, add, remove,********************************************
 # **********************************subcribe to price alerts, set target price*******************************************
@@ -423,7 +427,7 @@ def add_playlog(game):
         playsession = PlaySession(player_id=1,playlog_id=playlog.id,
                                   player_name=player_one_name,player_score=player_one_score)
         db.session.add(playsession)
-        db.session.commit()
+        
 
         x = range(playlog.player_count - 1) 
         for n in x: 
@@ -433,10 +437,9 @@ def add_playlog(game):
             playsession = PlaySession(player_id=player_id,playlog_id=playlog.id,
                                       player_name=player_name,player_score=player_score)
             db.session.add(playsession)
-            db.session.commit()
-
-
-        return redirect(f'/users/{g.user.id}/game_collection')
+            
+        db.session.commit()
+        return redirect(f'/users/{g.user.id}/playlogs')
 
 
     print(form.errors)
@@ -484,28 +487,45 @@ def show_game(api_id):
     (for game details,images, and videos) then displays that games details page 
     parsing out the html tags from the api data'''
 
-
+    """1st request get's a games data from the api"""
     resp = requests.get(f'{BASE_URL}/search',
                         params={'client_id': client_id, 'ids': api_id})
     data = resp.json()
 
+    """2nd request retrieves a game's images"""
     resp2 = requests.get(f'{BASE_URL}/game/images',
                          params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
 
     images = resp2.json()
 
+    """3rd request retrieves a game's videos"""
     resp3 = requests.get(f'{BASE_URL}/game/videos',
                          params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
-
+    
     videos = resp3.json()
+    
+    cat_ids = []
+    for num in range(len(data['games'][0]['categories'])):
+        cat_ids.append(data['games'][0]['categories'][num]['id'])
+    
+    categories = Category.query.all()
 
+    mech_ids = []
+    for num in range(len(data['games'][0]['mechanics'])):
+        mech_ids.append(data['games'][0]['mechanics'][num]['id'])
+
+
+    mechanics = Mechanic.query.all()
+    
     if g.user:
         collect_ids = [game.game_id for game in g.user.games]
         wish_ids = [game.game_id for game in g.user.wishes]
 
         return render_template('games/details.html', data=data,
-                           images=images, videos=videos, collect_ids=collect_ids,wish_ids=wish_ids)
+                           images=images, videos=videos, collect_ids=collect_ids,wish_ids=wish_ids,
+                           categories=categories,cat_ids=cat_ids, mechanics=mechanics,mech_ids=mech_ids)
 
     return render_template('games/details.html', data=data,
-                           images=images, videos=videos)
+                           images=images, videos=videos, categories=categories,cat_ids=cat_ids,
+                           mechanics=mechanics,mech_ids=mech_ids)
 
