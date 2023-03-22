@@ -165,16 +165,17 @@ def show_game_collecion(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
+    user = User.query.get_or_404(user_id)
     collection_value = db.session.query(func.sum(GameCollection.used_value)).filter(GameCollection.user_id == g.user.id).first()
     
     for char in collection_value:
         result = (char)
 
-    value = round(result,2)
-        
-    user = User.query.get_or_404(user_id)
-
-    return render_template('/users/collection.html', user=user, value=value)
+    if result:
+        value = round(result,2)
+        return render_template('/users/collection.html', user=user, value=value)
+    
+    return render_template('/users/collection.html', user=user)
 
 
 @app.route('/users/<int:user_id>/wishlist')
@@ -449,6 +450,11 @@ def add_playlog(game):
 @app.route('/playlogs/remove_log/<int:log_id>', methods=['POST'])
 def delete_playlog(log_id):
     """deletes a selected playlog from the database"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
     playlog = Playlog.query.get(log_id)
     db.session.delete(playlog)
     db.session.commit()
