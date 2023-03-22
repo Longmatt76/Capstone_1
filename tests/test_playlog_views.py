@@ -2,7 +2,7 @@
 
 # run these tests like:
 #
-#    FLASK_ENV=production python -m unittest tests/test_home_search_views.py
+#    FLASK_ENV=production python -m unittest tests/test_playlog_views.py
 
 
 import os
@@ -25,7 +25,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 
 
-class HomeViewTestCase(TestCase):
+class PlaylogViewTestCase(TestCase):
     """Test views for messages."""
 
     def setUp(self):

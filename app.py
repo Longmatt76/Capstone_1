@@ -228,10 +228,10 @@ def delete_user(user_id):
             do_logout()
             db.session.delete(user)
             db.session.commit()
-            flash('Sorry to see you go, rejoin anytime!', 'success')
+            flash('Sorry to see you go, rejoin anytime!', 'success text-center')
         return redirect('/')
 
-    flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger')
+    flash('Please verify your credentials and click "Self Destruct" if you really want to go', 'danger text-center')
     return render_template('users/delete.html', form=form)
 
 
@@ -244,7 +244,7 @@ def add_game(api_id):
     """ adds game to the users collection"""
 
     if not g.user:
-        flash("You must be logged in to add a game to your collection, please login or signup", "info")
+        flash("You must be logged in to add a game to your collection, please login or signup", "info text-center")
         return redirect("/login")
 
     resp = requests.get(f'{BASE_URL}/search',
@@ -342,7 +342,7 @@ def add_wish(api_id):
     """ adds game to the users wishlist"""
 
     if not g.user:
-        flash("You must be logged in to add a game to your wishlist, please login or signup", "info")
+        flash("You must be logged in to add a game to your wishlist, please login or signup", "info text-center")
         return redirect("/login")
 
     resp = requests.get(f'{BASE_URL}/search',
@@ -405,7 +405,7 @@ def edit_wish(game_id):
 def add_playlog(game):
     """records a playlog for a game in the users collecion"""
     if not g.user:
-        flash("You must be logged in to record a playlog, please login or signup", "info")
+        flash("You must be logged in to record a playlog, please login or signup", "info text-center")
         return redirect("/login")
     
     form = AddPlaylogForm()
@@ -481,8 +481,10 @@ def show_search():
     parsed = int(start)
 
     resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': 'true', 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
+                        params={'fuzzy_match': True, 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
     data = resp.json()
+    if len(data['games'])== 0:
+        flash(f'Oops,"{query}"returned no results, try refining your search or submit an empty query to get back popular games!', 'info text-center')
     parsed += 30
     return render_template('search.html', data=data, query=query, parsed=parsed)
 
