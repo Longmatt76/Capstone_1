@@ -442,8 +442,6 @@ def add_playlog(game):
         db.session.commit()
         return redirect(f'/users/{g.user.id}/playlogs')
 
-
-    print(form.errors)
     return render_template('games/create_playlog.html', form=form, game=game)
 
 
@@ -456,6 +454,7 @@ def delete_playlog(log_id):
         return redirect("/")
     
     playlog = Playlog.query.get(log_id)
+    
     db.session.delete(playlog)
     db.session.commit()
 

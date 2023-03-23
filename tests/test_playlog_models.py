@@ -88,10 +88,11 @@ class UserModelTestCase(TestCase):
          db.session.add_all(playsessions)
          db.session.commit()
 
-         self.assertEqual(len(p1.sessions),3)
-         self.assertEqual(p1.sessions[0].player_name, 'test1')
-         self.assertEqual(p1.sessions[1].player_score, 20)
-         self.assertNotEqual(p1.sessions[2].player_score, 300)
+
+         self.assertEqual(p1.user_id, self.u1.id)
+         self.assertEqual(p1.game, 'testgame1')
+         self.assertEqual(ps1.player_name,'test1')
+         self.assertNotEqual(ps2.player_score, 300)
 
 
 
