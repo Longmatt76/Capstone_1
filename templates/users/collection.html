@@ -116,7 +116,7 @@
               <td class="border border-secondary"><a class="si" href="/search/{{game.game_id}}/game_details">{{game.name}}</a><hr> <a class="si font-italic" href="/playlogs/add_log/{{game.name}}">add playlog</a> </td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#B{{game.game_id}}">{{game.rating}}</a></td>
               <td class="border border-secondary"><a class="si" href="" data-toggle="modal" data-target="#A{{game.game_id}}">{{game.comments}}</a> </td>
-              <td class="border border-secondary"><a class="si" href="/gamecollection/value_game/{{game.game_id}}">{% if game.used_value == None %}get value{% else %}${{game.used_value}}{% endif %}</a></td>
+              <td class="border border-secondary" id="td"><a class="si" id="getvalue" href="/gamecollection/value_game/{{game.game_id}}">{% if game.used_value == None %} <div id="valueplace"> get value</div><div><i id="spinner" class="fa-solid fa-rotate fa-spin ml-4"></i></div>{% else %}${{game.used_value}}{% endif %}</a></td>
               <td class="border border-secondary"><a class="si" href="/gamecollection/remove_game/{{game.game_id}}"> <button class="btn btn-danger btn-sm">Remove</button></a></td>
 
             </tr>{% endfor %}
