@@ -166,6 +166,10 @@ def show_game_collecion(user_id):
         return redirect("/")
     
     user = User.query.get_or_404(user_id)
+    page = request.args.get('page', 1, type=int)
+    games = GameCollection.query.filter(
+        GameCollection.user_id == user.id).paginate(page=page, per_page=10)
+    
     collection_value = db.session.query(func.sum(GameCollection.used_value)).filter(GameCollection.user_id == g.user.id).first()
     
     for char in collection_value:
@@ -173,9 +177,9 @@ def show_game_collecion(user_id):
 
     if result:
         value = round(result,2)
-        return render_template('/users/collection.html', user=user, value=value)
+        return render_template('/users/collection.html', user=user, value=value, games=games)
     
-    return render_template('/users/collection.html', user=user)
+    return render_template('/users/collection.html', user=user, games=games)
 
 
 @app.route('/users/<int:user_id>/wishlist')
@@ -187,8 +191,12 @@ def show_wishlist(user_id):
 
     form = EditWishForm(obj=g.user)
     user = User.query.get_or_404(user_id)
+    
+    page = request.args.get('page', 1, type=int)
+    wishes = Wishlist.query.filter(
+        Wishlist.user_id == user.id).paginate(page=page, per_page=10)
 
-    return render_template('/users/wishlist.html', user=user, form=form)
+    return render_template('/users/wishlist.html', user=user, form=form, wishes=wishes)
 
 
 @app.route('/users/<int:user_id>/playlogs')
@@ -218,6 +226,18 @@ def delete_user(user_id):
     games_to_delete = GameCollection.query.filter(
         GameCollection.user_id == user.id).all()
     for game in games_to_delete:
+        db.session.delete(game)
+    db.session.commit()
+
+    wishes_to_delete = Wishlist.query.filter(
+        Wishlist.user_id == user.id).all()
+    for game in wishes_to_delete:
+        db.session.delete(game)
+    db.session.commit()
+
+    playlogs_to_delete = Playlog.query.filter(
+        Playlog.user_id == user.id).all()
+    for game in playlogs_to_delete:
         db.session.delete(game)
     db.session.commit()
 
@@ -286,10 +306,14 @@ def edit_rating(game_id):
         return redirect("/")
 
     game = GameCollection.query.get((g.user.id, game_id))
+    user = User.query.get_or_404(g.user.id)
+    page = request.args.get('page', 1, type=int)
+    games = GameCollection.query.filter(
+        GameCollection.user_id == user.id).paginate(page=page, per_page=10)
 
     game.rating = request.form['rating']
     db.session.commit()
-    return render_template('users/collection.html')
+    return render_template('users/collection.html', games=games)
 
 
 @app.route('/gamecollection/edit_comments/<string:game_id>', methods=['POST'])
@@ -301,10 +325,15 @@ def edit_comments(game_id):
         return redirect("/")
 
     game = GameCollection.query.get((g.user.id, game_id))
+    game = GameCollection.query.get((g.user.id, game_id))
+    user = User.query.get_or_404(g.user.id)
+    page = request.args.get('page', 1, type=int)
+    games = GameCollection.query.filter(
+        GameCollection.user_id == user.id).paginate(page=page, per_page=10)
 
     game.comments = request.form['comment']
     db.session.commit()
-    return render_template('users/collection.html')
+    return render_template('users/collection.html', games=games)
 
 
 @app.route('/gamecollection/value_game/<string:game_id>', methods=['GET'])
@@ -385,14 +414,18 @@ def edit_wish(game_id):
      
     wish = Wishlist.query.get((g.user.id, game_id))
     form = EditWishForm()
+    user = User.query.get_or_404(g.user.id)
+    page = request.args.get('page', 1, type=int)
+    wishes = Wishlist.query.filter(
+        Wishlist.user_id == user.id).paginate(page=page, per_page=10)
     
     if form.validate_on_submit:
             wish.subscribe_price_alerts =  form.subscribe_price_alerts.data
             wish.price_alert_trigger = form.price_alert_trigger.data
             db.session.commit()
-            return render_template('users/wishlist.html', form=form)
+            return render_template('users/wishlist.html', form=form, wishes=wishes)
     
-    return render_template('users/wishlist.html', form=form)
+    return render_template('users/wishlist.html', form=form, wishes=wishes)
 
 
 

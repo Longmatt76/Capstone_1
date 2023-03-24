@@ -45,11 +45,11 @@
                 title= "By clicking 'get value' we search recent used sales prices of your game 
                 and average them to arrive at an estimated value which will then magically appear after a few seconds">Used Value</th>
                 <th scope="col" class=""></th>
-                
+              
               </tr>
             </thead>
             <tbody>
-              {% for game in g.user.games %}
+              {% for game in games.items %}
               <tr>       <div class="modal" tabindex="-1" id="B{{game.game_id}}" role="dialog">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
@@ -121,8 +121,19 @@
 
             </tr>{% endfor %}
           </tbody>
-          </table>
+          </table> <div class="text-center">
+          {% for page_num in games.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+          {% if page_num %}{% if games.page == page_num %}
+          
+          <a 
+          class="btn btn-info mb-4 text-center" href="{{url_for('show_game_collecion', page= page_num, user_id= g.user.id)}}">{{page_num}}</a>
+          {% else %}
+          <a 
+          class="btn btn-outline-info mb-4 text-center" href="{{url_for('show_game_collecion', page= page_num, user_id=g.user.id)}}">{{page_num}}</a>
+          {% endif %} {% else %} ... {% endif %}{% endfor %}
         </div>
+      </div>
+      </div>
     </div>
 </div>
 

@@ -47,7 +47,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for game in g.user.wishes %}
+              {% for game in wishes.items %}
               <tr>       
 
               <div class="modal" tabindex="-1" id="A{{game.game_id}}" role="dialog">
@@ -94,6 +94,17 @@
             </tr>{% endfor %}
           </tbody>
           </table>
+          <div class="text-center">
+            {% for page_num in wishes.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+            {% if page_num %}{% if wishes.page == page_num %}
+            
+            <a 
+            class="btn btn-info mb-4 text-center" href="{{url_for('show_wishlist', page= page_num, user_id= g.user.id)}}">{{page_num}}</a>
+            {% else %}
+            <a 
+            class="btn btn-outline-info mb-4 text-center" href="{{url_for('show_wishlist', page= page_num, user_id=g.user.id)}}">{{page_num}}</a>
+            {% endif %} {% else %} ... {% endif %}{% endfor %}
+          </div>
         </div>
     </div>
 </div>
