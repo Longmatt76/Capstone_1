@@ -7,9 +7,9 @@
 <h3 class="text-info text-center mt-3" id="query">{{g.user.username}}'s playlogs</h3>
 {% endif %}
 
-{% for playlog in g.user.playlogs %}
+{% for playlog in playlogs.items %}
 
-<div class="container my-4">
+<div class="container my-5">
 <div class="card text-center sitefont">
   <div class="card-header bg-dark p-3">
      <h4 class=" font-weight-bold text-white">Game: <span id="query">{{playlog.game}}</span></h4>
@@ -43,6 +43,18 @@
    </form>
   </div>
 </div>
+
 </div>
 {% endfor %}
+<div class="text-center">
+  {% for page_num in playlogs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+  {% if page_num %}{% if playlogs.page == page_num %}
+  
+  <a 
+  class="btn btn-info my-4 text-center" href="{{url_for('show_playlogs', page= page_num, user_id= g.user.id)}}">{{page_num}}</a>
+  {% else %}
+  <a 
+  class="btn btn-outline-info my-4 text-center" href="{{url_for('show_playlogs', page= page_num, user_id=g.user.id)}}">{{page_num}}</a>
+  {% endif %} {% else %} ... {% endif %}{% endfor %}
+</div>
 {% endblock %}

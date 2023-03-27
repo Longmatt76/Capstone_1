@@ -207,9 +207,12 @@ def show_playlogs(user_id):
         return redirect("/")
     
     user = User.query.get_or_404(user_id)
+    page = request.args.get('page', 1, type=int)
+    playlogs = Playlog.query.filter(
+        Playlog.user_id == user.id).paginate(page=page, per_page=10)
     players = PlaySession.query.filter(PlaySession.playlog_id == Playlog.id).all()
     
-    return render_template('/users/playlogs.html', user=user, players=players)
+    return render_template('/users/playlogs.html', user=user, players=players, playlogs=playlogs)
 
 @app.route('/users/<int:user_id>/delete', methods=["GET", "POST"])
 def delete_user(user_id):
