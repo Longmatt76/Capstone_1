@@ -11,6 +11,11 @@ from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWish
 import requests
 from flask_sqlalchemy import Pagination
 from functions import average, get_categories, get_mechanics
+from dotenv import load_dotenv
+load_dotenv()
+
+client_id = os.getenv('client_id')
+
 
 
 CURR_USER_KEY = "curr_user"
@@ -27,12 +32,13 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 toolbar = DebugToolbarExtension(app)
 
 BASE_URL = 'https://api.boardgameatlas.com/api'
-client_id = 'XlXxjnv76F'
+
+
+
 
 connect_db(app)
 
-# get_mechanics()
-# get_categories()
+
 
 # *******************************routes for signup, logging in, logging out******************************
 

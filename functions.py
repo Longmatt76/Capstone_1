@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 from game_models import Mechanic,Category
 from user_models import db
 import requests
+from app import client_id, BASE_URL
 
-BASE_URL = 'https://api.boardgameatlas.com/api'
-client_id = 'XlXxjnv76F'
+
 
 
 # def remove_tags(html):
