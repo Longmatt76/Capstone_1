@@ -2,7 +2,10 @@ from bs4 import BeautifulSoup
 from game_models import Mechanic,Category
 from user_models import db
 import requests
-from app import client_id, BASE_URL
+import os
+
+BASE_URL = 'https://api.boardgameatlas.com/api'
+client_id = os.getenv('client_id')
 
 
 

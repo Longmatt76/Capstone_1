@@ -334,7 +334,6 @@ def edit_comments(game_id):
         return redirect("/")
 
     game = GameCollection.query.get((g.user.id, game_id))
-    game = GameCollection.query.get((g.user.id, game_id))
     user = User.query.get_or_404(g.user.id)
     page = request.args.get('page', 1, type=int)
     games = GameCollection.query.filter(
@@ -353,13 +352,11 @@ def get_value(game_id):
                         params={'pretty': 'true', 'game_id': game_id, 'client_id': client_id})
     
     data = resp.json()
-    prices = []
-    for num in range(len(data['gameWithPrices']['used'])):
-        prices.append(data['gameWithPrices']['used'][num]['price'])
+   
+    prices = average([item['price'] for item in data['gameWithPrices']['used']])
     
     if prices:
-        avg = average(prices)
-        rnd_avg = round(avg,2)
+        rnd_avg = round(prices,2)
     
         game = GameCollection.query.get((g.user.id, game_id))
         game.used_value = rnd_avg

@@ -164,3 +164,11 @@ ul i{
 #cbod{
     background-color: #a6b8ca
 }
+
+#card{
+    height: 100%;
+}
+
+#card_cont{
+    display: grid;
+}

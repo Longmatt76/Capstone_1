@@ -104,7 +104,7 @@
         {% for mechanic in mechanics %}
         {% for id in mech_ids %}
         {% if id == mechanic.id %}
-        {{mechanic.name}},&nbsp;
+        {{mechanic.name}}{% if not loop.last %},&nbsp;{% endif %}
         {% endif %}{% endfor %}{% endfor %}
       </td>
     </tr>
@@ -114,7 +114,7 @@
         {% for category in categories %}
         {% for id in cat_ids %}
         {% if id == category.id %}
-        {{category.name}},&nbsp;
+        {{category.name}}{% if not loop.last %},&nbsp;{% endif %}
         {% endif %}{% endfor %}{% endfor %}
       </td>
     </tr>
