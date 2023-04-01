@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from game_models import Mechanic,Category
 from user_models import db
 import requests

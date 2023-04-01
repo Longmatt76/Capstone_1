@@ -96,6 +96,7 @@ ul i{
 
 #gamedeets{
     outline: 2px solid black;
+    overflow: auto;
 }
 
 .monkey{
@@ -108,6 +109,7 @@ ul i{
 .lickit{
     border-bottom: 1.5px solid black;
     border-left:  1.5px solid black;
+    border-right:  1px solid black;
 }
 
 .scrolling-wrapper {
@@ -171,4 +173,8 @@ ul i{
 
 #card_cont{
     display: grid;
+}
+
+table{
+    overflow: auto;
 }
