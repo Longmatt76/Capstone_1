@@ -8,9 +8,8 @@ from user_models import db, connect_db, User
 from game_models import GameCollection, Wishlist, Category, Mechanic
 from playlog_models import Playlog, PlaySession
 from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWishForm, AddPlaylogForm
-import requests
+import requests, statistics
 from flask_sqlalchemy import Pagination
-from functions import average, get_categories, get_mechanics
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -353,7 +352,7 @@ def get_value(game_id):
     
     data = resp.json()
    
-    prices = average([item['price'] for item in data['gameWithPrices']['used']])
+    prices = statistics.mean([item['price'] for item in data['gameWithPrices']['used']])
     
     if prices:
         rnd_avg = round(prices,2)

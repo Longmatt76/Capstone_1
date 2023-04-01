@@ -1,7 +1,7 @@
 from user_models import User,db
 from game_models import GameCollection, Wishlist, Category, Mechanic
 from playlog_models import Playlog, PlaySession
-from functions import get_categories, get_mechanics
+from games_api import get_categories, get_mechanics
 from app import app
 
 
