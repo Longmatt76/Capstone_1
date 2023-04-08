@@ -11,6 +11,7 @@ from forms import UserAddForm, UserEditForm, LoginForm, DeleteUserForm, EditWish
 import requests, statistics
 from flask_sqlalchemy import Pagination
 from dotenv import load_dotenv
+from games_api import get_search, get_images, get_videos, get_game_data, get_game_value
 load_dotenv()
 
 client_id = os.getenv('client_id')
@@ -346,11 +347,8 @@ def edit_comments(game_id):
 @app.route('/gamecollection/value_game/<string:game_id>', methods=['GET'])
 def get_value(game_id):
     """checks the api for recent used sales prices and averages them"""
-
-    resp = requests.get(f'{BASE_URL}/game/prices',
-                        params={'pretty': 'true', 'game_id': game_id, 'client_id': client_id})
     
-    data = resp.json()
+    data = get_game_value(game_id)
    
     prices = statistics.mean([item['price'] for item in data['gameWithPrices']['used']])
     
@@ -517,11 +515,11 @@ def show_search():
     start = request.args.get('start', 0)
     parsed = int(start)
 
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'fuzzy_match': True, 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
-    data = resp.json()
+    data = get_search(query,start)
+
     if len(data['games'])== 0:
         flash(f'Oops,"{query}"returned no results, try refining your search or submit an empty query to get back popular games!', 'info text-center')
+    
     parsed += 30
     return render_template('search.html', data=data, query=query, parsed=parsed)
 
@@ -533,21 +531,16 @@ def show_game(api_id):
     parsing out the html tags from the api data'''
 
     """1st request get's a games data from the api"""
-    resp = requests.get(f'{BASE_URL}/search',
-                        params={'client_id': client_id, 'ids': api_id})
-    data = resp.json()
+   
+    data = get_game_data(api_id)
 
     """2nd request retrieves a game's images"""
-    resp2 = requests.get(f'{BASE_URL}/game/images',
-                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
-
-    images = resp2.json()
+   
+    images = get_images(api_id)
 
     """3rd request retrieves a game's videos"""
-    resp3 = requests.get(f'{BASE_URL}/game/videos',
-                         params={'pretty': 'true', 'client_id': client_id, 'limit': 50, 'game_id': api_id})
     
-    videos = resp3.json()
+    videos = get_videos(api_id)
     
     cat_ids = []
     for num in range(len(data['games'][0]['categories'])):
