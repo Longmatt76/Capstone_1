@@ -8,8 +8,7 @@ to store a digital representation of their board game collection, save games to 
 
  It is a web application built primarily with Python/Flask, it integrates a third party API that allows for searching through thousands of popular and even not so popular 
 board games. Data is stored in a Postgresql database managed in Python using SQLAlchemy, sensitive information is encrypted with Bcrypt. The app is user friendly and very 
-intuitive to use. I'm currently in the process of deploying it and when I have a URL I will post it here in this readme so you can all try it for yourselves and hopefully 
-test out all it has to offer! 
+intuitive to use. Try the deployed version yourself at www.theboardgameshelf.net
 
  I would consider the project 'complete', that being said I do have a feature that allows users to subscribe to price alerts and set a target price for games in their wishlist, this feature is not currently implemented with an external API/automatic email alerts but it's something I plan on doing at some point in the future. Any suggestions or critiques are welcome.
  

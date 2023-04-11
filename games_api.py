@@ -2,7 +2,7 @@ from game_models import Mechanic,Category
 from user_models import db
 import requests
 import os
-from flask import flash, render_template
+
 
 BASE_URL = 'https://api.boardgameatlas.com/api'
 client_id = os.getenv('client_id')
@@ -10,16 +10,12 @@ client_id = os.getenv('client_id')
 
 
 def get_search(query, start):
-    try:
+    
         resp = requests.get(f'{BASE_URL}/search',
                         params={'fuzzy_match': True, 'limit': 30, 'skip': start, 'client_id': client_id, 'name': query})
         return resp.json()
     
-    except: 
-        flash('Sorry, an error occured when accessing the API please try again', 'danger')
-        return render_template('search.html')
-
-
+   
 def get_game_data(api_id):
     resp = requests.get(f'{BASE_URL}/search',
                         params={ 'client_id': client_id, 'ids': api_id})
