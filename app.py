@@ -347,22 +347,27 @@ def edit_comments(game_id):
 @app.route('/gamecollection/value_game/<string:game_id>', methods=['GET'])
 def get_value(game_id):
     """checks the api for recent used sales prices and averages them"""
-    
-    data = get_game_value(game_id)
+    try:
+        data = get_game_value(game_id)
    
-    prices = statistics.mean([item['price'] for item in data['gameWithPrices']['used']])
+        prices = statistics.mean([item['price'] for item in data['gameWithPrices']['used']])
     
-    if prices:
-        rnd_avg = round(prices,2)
+        if prices:
+            rnd_avg = round(prices,2)
     
-        game = GameCollection.query.get((g.user.id, game_id))
-        game.used_value = rnd_avg
-        db.session.commit()
+            game = GameCollection.query.get((g.user.id, game_id))
+            game.used_value = rnd_avg
+            db.session.commit()
     
-        return redirect(f'/users/{g.user.id}/game_collection')
+            return redirect(f'/users/{g.user.id}/game_collection')
 
-    flash("Sorry that game does not currently have a sales history on which to base an estimated value, please try again at a later date", 'info text-center')
-    return redirect(f'/users/{g.user.id}/game_collection')
+        flash("Sorry that game does not currently have a sales history on which to base an estimated value, please try again at a later date", 'info text-center')
+        return redirect(f'/users/{g.user.id}/game_collection')
+    
+    except:
+         flash('Sorry, there was an error when accessing the API. It may be down temporarily. Please try again later', 'danger')
+    
+    return render_template('home.html')
 
 # ***********************************basic routes for wishlists, add, remove,********************************************
 # **********************************subcribe to price alerts, set target price*******************************************
@@ -511,17 +516,24 @@ def show_home():
 @app.route('/search')
 def show_search():
     '''queries the API with the search request and displays the results, 30 per page'''
-    query = request.args['search']
-    start = request.args.get('start', 0)
-    parsed = int(start)
+    try:
+        query = request.args['search']
+        start = request.args.get('start', 0)
+        parsed = int(start)
 
-    data = get_search(query,start)
 
-    if len(data['games'])== 0:
-        flash(f'Oops,"{query}"returned no results, try refining your search or submit an empty query to get back popular games!', 'info text-center')
+        data = get_search(query,start)
+
+        if len(data['games'])== 0:
+         flash(f'Oops,"{query}"returned no results, try refining your search or submit an empty query to get back popular games!', 'info text-center')
     
-    parsed += 30
-    return render_template('search.html', data=data, query=query, parsed=parsed)
+        parsed += 30
+        return render_template('search.html', data=data, query=query, parsed=parsed)
+
+    except:
+        flash('Sorry, there was an error when accessing the API. It may be down temporarily. Please try again later', 'danger')
+    
+    return render_template('home.html')
 
 
 @app.route('/search/<string:api_id>/game_details')
@@ -529,41 +541,47 @@ def show_game(api_id):
     '''Using the api's id for the clicked on game it queries the API three times
     (for game details,images, and videos) then displays that games details page 
     parsing out the html tags from the api data'''
+    try:
+        """1st request get's a games data from the api"""
+ 
+        data = get_game_data(api_id)
 
-    """1st request get's a games data from the api"""
+        """2nd request retrieves a game's images"""
    
-    data = get_game_data(api_id)
+        images = get_images(api_id)
 
-    """2nd request retrieves a game's images"""
-   
-    images = get_images(api_id)
-
-    """3rd request retrieves a game's videos"""
+        """3rd request retrieves a game's videos"""
     
-    videos = get_videos(api_id)
+        videos = get_videos(api_id)
     
-    cat_ids = []
-    for num in range(len(data['games'][0]['categories'])):
-        cat_ids.append(data['games'][0]['categories'][num]['id'])
+        cat_ids = []
+        for num in range(len(data['games'][0]['categories'])):
+            cat_ids.append(data['games'][0]['categories'][num]['id'])
     
-    categories = Category.query.all()
+        categories = Category.query.all()
 
-    mech_ids = []
-    for num in range(len(data['games'][0]['mechanics'])):
-        mech_ids.append(data['games'][0]['mechanics'][num]['id'])
+        mech_ids = []
+        for num in range(len(data['games'][0]['mechanics'])):
+            mech_ids.append(data['games'][0]['mechanics'][num]['id'])
 
 
-    mechanics = Mechanic.query.all()
+        mechanics = Mechanic.query.all()
     
-    if g.user:
-        collect_ids = [game.game_id for game in g.user.games]
-        wish_ids = [game.game_id for game in g.user.wishes]
+        if g.user:
+            collect_ids = [game.game_id for game in g.user.games]
+            wish_ids = [game.game_id for game in g.user.wishes]
+
+            return render_template('games/details.html', data=data,
+                            images=images, videos=videos, collect_ids=collect_ids,wish_ids=wish_ids,
+                            categories=categories,cat_ids=cat_ids, mechanics=mechanics,mech_ids=mech_ids)
 
         return render_template('games/details.html', data=data,
-                           images=images, videos=videos, collect_ids=collect_ids,wish_ids=wish_ids,
-                           categories=categories,cat_ids=cat_ids, mechanics=mechanics,mech_ids=mech_ids)
+                            images=images, videos=videos, categories=categories,cat_ids=cat_ids,
+                             mechanics=mechanics,mech_ids=mech_ids)
 
-    return render_template('games/details.html', data=data,
-                           images=images, videos=videos, categories=categories,cat_ids=cat_ids,
-                           mechanics=mechanics,mech_ids=mech_ids)
+    except:
+        flash('Sorry, there was an error when accessing the API. It may be down temporarily. Please try again later', 'danger')
+    
+    return render_template('home.html')
+        
 
